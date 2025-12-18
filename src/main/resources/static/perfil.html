@@ -79,12 +79,24 @@
 
             <!-- Ações -->
             <div class="card" style="text-align: center;">
-                <button class="btn btn-secondary" onclick="logout()">
+                <button class="btn btn-alert" onclick="logout()">
                     Sair da Conta
                 </button>
             </div>
         </div>
     </div>
+
+    <!-- Modal Personalizado -->
+<div id="customModal" class="modal-overlay">
+    <div class="modal-content">
+        <h3>Tem certeza que deseja sair?😥</h3>
+
+        <div class="modal-buttons">
+            <button id="modalConfirm" class="btn-confirm">Sim, sair</button>
+            <button id="modalCancel" class="btn-cancel">Cancelar</button>
+        </div>
+    </div>
+</div>
 
     <script src="/js/perfil.js"></script>
 </body>

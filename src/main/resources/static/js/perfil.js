@@ -1,5 +1,12 @@
 // Perfil TypeScript/JavaScript
 
+
+// substitui a URL no histórico sem recarregar a página
+if (location.pathname.endsWith('.html')) {
+  history.replaceState(null, '', '/perfil');
+}
+
+
 // Carregar dados do perfil
 async function carregarPerfil() {
     try {
@@ -57,11 +64,34 @@ function formatarData(dataString) {
     return `${dia}/${mes}/${ano}`;
 }
 
+function showCustomConfirm(callback) {
+    const modal = document.getElementById("customModal");
+    const btnConfirm = document.getElementById("modalConfirm");
+    const btnCancel = document.getElementById("modalCancel");
+
+    modal.style.display = "flex";
+
+    btnConfirm.onclick = () => {
+        modal.style.display = "none";
+        callback(true);
+    };
+
+    btnCancel.onclick = () => {
+        modal.style.display = "none";
+        callback(false);
+    };
+}
+
+
+
 // Função de logout
+// Função de logout usando modal customizado
 function logout() {
-    if (confirm('Tem certeza que deseja sair?')) {
-        window.location.href = '/api/auth/logout';
-    }
+    showCustomConfirm((confirmado) => {
+        if (confirmado) {
+            window.location.href = '/api/auth/logout';
+        }
+    });
 }
 
 // Carregar perfil ao carregar a página
