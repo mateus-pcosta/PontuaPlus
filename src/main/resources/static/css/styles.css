@@ -120,8 +120,19 @@ body {
 
 .btn-secondary:hover {
     background: var(--cinza-escuro);
+    color: var(--texto-escuro);
+}
+
+.btn-alert {
+    background: var(--cinza-medio);
+    color: var(--texto-escuro);
+}
+
+.btn-alert:hover {
+    background: #fd3333;
     color: var(--branco);
 }
+
 
 /* Formulários */
 .form-group {
@@ -237,6 +248,114 @@ tr:hover {
     background: linear-gradient(135deg, #B9F2FF 0%, #00BFFF 100%);
     color: var(--texto-escuro);
 }
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .metric-value {
+        font-size: 36px;
+    }
+}
+
+/* Loading */
+.loading {
+    text-align: center;
+    padding: 40px;
+}
+
+.spinner {
+    border: 4px solid var(--cinza-medio);
+    border-top: 4px solid var(--azul-royal);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+
+/* Fundo escuro transparente */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.45);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+/* Caixa do modal */
+.modal-content {
+    background: linear-gradient(135deg, #5a3ee6, #2a5bda);
+    padding: 30px;
+    border-radius: 18px;
+    width: 380px;
+    text-align: center;
+    color: white;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+}
+
+.modal-content h3 {
+    margin-bottom: 20px;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+/* Botões */
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+.btn-confirm {
+    background: #ff4d4d;
+    border: none;
+    padding: 10px 20px;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: 0.2s;
+}
+
+.btn-confirm:hover {
+    background: #e84343;
+}
+
+.btn-cancel {
+    background: #ffffff22;
+    border: 1px solid #ffffff55;
+    padding: 10px 20px;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: 0.2s;
+}
+
+.btn-cancel:hover {
+    background: #ffffff33;
+}
+
+
 
 /* Top Cards Redesign */
 .top-cards {
@@ -425,58 +544,4 @@ tr:hover {
     font-size: 20px;
     font-weight: 700;
     color: var(--azul-royal);
-}
-
-/* Responsividade */
-@media (max-width: 768px) {
-    .header {
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .top-cards {
-        grid-template-columns: 1fr;
-    }
-
-    .charts-section {
-        grid-template-columns: 1fr;
-    }
-
-    .metric-value {
-        font-size: 36px;
-    }
-
-    .materia-item {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .materia-nome {
-        min-width: auto;
-    }
-
-    .materia-bar-container {
-        width: 100%;
-    }
-}
-
-/* Loading */
-.loading {
-    text-align: center;
-    padding: 40px;
-}
-
-.spinner {
-    border: 4px solid var(--cinza-medio);
-    border-top: 4px solid var(--azul-royal);
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 1s linear infinite;
-    margin: 0 auto;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
 }
