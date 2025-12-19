@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil - Pontua+</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="header">
+        <h1>Pontua+</h1>
+        <div class="user-info">
+            <button class="btn btn-secondary" onclick="window.location.href='/professor-dashboard.html'" style="margin-right: 12px;">
+                Voltar
+            </button>
+            <span id="userName">Carregando...</span>
+            <div class="user-avatar" id="userAvatar">
+                M
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Carregando seu perfil...</p>
+        </div>
+
+        <div id="perfilContent" style="display: none;">
+            <!-- Informações Pessoais -->
+            <div class="card">
+                <h2 style="margin-bottom: 24px; background: linear-gradient(135deg, var(--azul-royal) 0%, var(--roxo-vibrante) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                    Informações Pessoais
+                </h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px;">
+                    <div>
+                        <div style="color: var(--cinza-escuro); font-size: 14px; margin-bottom: 4px;">Nome Completo</div>
+                        <div style="font-size: 18px; font-weight: 600;" id="nomeCompleto">-</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--cinza-escuro); font-size: 14px; margin-bottom: 4px;">E-mail</div>
+                        <div style="font-size: 18px; font-weight: 600;" id="email">-</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--cinza-escuro); font-size: 14px; margin-bottom: 4px;">Data de Nascimento</div>
+                        <div style="font-size: 18px; font-weight: 600;" id="dataNascimento">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Informações Acadêmicas -->
+            <div class="card">
+                <h2 style="margin-bottom: 24px; background: linear-gradient(135deg, var(--azul-royal) 0%, var(--roxo-vibrante) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                    Informações Acadêmicas
+                </h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px;">
+                    <div>
+                        <div style="color: var(--cinza-escuro); font-size: 14px; margin-bottom: 4px;">Matrícula</div>
+                        <div style="font-size: 18px; font-weight: 600;" id="matricula">-</div>
+                    </div>
+
+                    <div>
+                        <div style="color: var(--cinza-escuro); font-size: 14px; margin-bottom: 4px;">Colégio</div>
+                        <div style="font-size: 18px; font-weight: 600;" id="colegio">-</div>
+                    </div>
+
+                    <div>
+                        <div style="color: var(--cinza-escuro); font-size: 14px; margin-bottom: 4px;">Data de Ingresso</div>
+                        <div style="font-size: 18px; font-weight: 600;" id="dataIngresso">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ações -->
+            <div class="card" style="text-align: center;">
+                <button class="btn btn-alert" onclick="logout()">
+                    Sair da Conta
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Personalizado -->
+<div id="customModal" class="modal-overlay">
+    <div class="modal-content">
+        <h3>Tem certeza que deseja sair?😥</h3>
+
+        <div class="modal-buttons">
+            <button id="modalConfirm" class="btn-confirm">Sim, sair</button>
+            <button id="modalCancel" class="btn-cancel">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+    <script src="/js/colaborador-perfil.js"></script>
+</body>
+</html>
