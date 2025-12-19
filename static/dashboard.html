@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Pontua+</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h1>Pontua+</h1>
+        <div class="user-info">
+            <span id="userName">Carregando...</span>
+            <div class="user-avatar" id="userAvatar" onclick="window.location.href='/perfil.html'">
+                M
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Carregando seus dados...</p>
+        </div>
+
+        <div id="dashboardContent" style="display: none;">
+            <!-- Cards Superiores -->
+            <div class="top-cards">
+                <div class="metric-card">
+                    <div class="metric-label">Pontos Atuais</div>
+                    <div class="metric-value" id="totalPontos">0</div>
+                    <div class="metric-subtitle">de 100 pontos</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-label">Notas e Frequência</div>
+                    <div class="metric-value-small" id="notasFrequencia">0/50</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="notasFrequenciaBar"></div>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-label">Evolução e Esforço</div>
+                    <div class="metric-value-small" id="evolucaoEsforco">0/50</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="evolucaoEsforcoBar"></div>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-label">Ranking Atual</div>
+                    <div class="metric-value" id="rankingAtual">-</div>
+                    <div class="metric-subtitle" id="posicaoRanking">-</div>
+                </div>
+            </div>
+
+            <!-- Seção de Gráficos -->
+            <div class="charts-section">
+                <div class="card chart-card">
+                    <h2>Evolução das Notas</h2>
+                    <canvas id="notasChart"></canvas>
+                </div>
+
+                <div class="card chart-card">
+                    <h2>Frequência Mensal</h2>
+                    <canvas id="frequenciaChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Detalhamento da Pontuação -->
+            <div class="card">
+                <h2 style="margin-bottom: 24px;">Detalhamento da Pontuação</h2>
+                <div class="pontuacao-detalhes">
+                    <div class="detalhe-item">
+                        <div class="detalhe-header">
+                            <span class="detalhe-label">Pontos por Notas</span>
+                            <span class="detalhe-valor" id="pontosNotas">0/35</span>
+                        </div>
+                        <div class="progress-bar-detalhe">
+                            <div class="progress-fill-detalhe" id="pontosNotasBar"></div>
+                        </div>
+                    </div>
+
+                    <div class="detalhe-item">
+                        <div class="detalhe-header">
+                            <span class="detalhe-label">Pontos por Frequência</span>
+                            <span class="detalhe-valor" id="pontosFrequencia">0/15</span>
+                        </div>
+                        <div class="progress-bar-detalhe">
+                            <div class="progress-fill-detalhe" id="pontosFrequenciaBar"></div>
+                        </div>
+                    </div>
+
+                    <div class="detalhe-item">
+                        <div class="detalhe-header">
+                            <span class="detalhe-label">Pontos por Atividades Extras</span>
+                            <span class="detalhe-valor" id="pontosExtras">0/50</span>
+                        </div>
+                        <div class="progress-bar-detalhe">
+                            <div class="progress-fill-detalhe" id="pontosExtrasBar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desempenho por Matéria -->
+            <div class="card">
+                <h2 style="margin-bottom: 24px;">Desempenho por Matéria</h2>
+                <div class="materias-section" id="materiasSection">
+                    <!-- Será preenchido via JavaScript -->
+                </div>
+            </div>
+
+            <!-- Atividades Extracurriculares -->
+            <div class="card">
+                <h2 style="margin-bottom: 16px;">Atividades Extracurriculares</h2>
+                <div class="atividades-grid" id="atividadesGrid">
+                    <!-- Será preenchido via JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>
