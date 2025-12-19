@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Pontua+</title>
     <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
     <div class="header">
@@ -24,102 +25,100 @@
         </div>
 
         <div id="dashboardContent" style="display: none;">
-            <!-- Métricas Principais -->
-            <div class="metrics-grid">
+            <!-- Cards Superiores -->
+            <div class="top-cards">
                 <div class="metric-card">
-                    <div class="metric-label">Total de Pontos</div>
+                    <div class="metric-label">Pontos Atuais</div>
                     <div class="metric-value" id="totalPontos">0</div>
+                    <div class="metric-subtitle">de 100 pontos</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-label">Notas e Frequência</div>
+                    <div class="metric-value-small" id="notasFrequencia">0/50</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="notasFrequenciaBar"></div>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-label">Evolução e Esforço</div>
+                    <div class="metric-value-small" id="evolucaoEsforco">0/50</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="evolucaoEsforcoBar"></div>
+                    </div>
                 </div>
 
                 <div class="metric-card">
                     <div class="metric-label">Ranking Atual</div>
                     <div class="metric-value" id="rankingAtual">-</div>
-                </div>
-
-                <div class="metric-card">
-                    <div class="metric-label">Posição</div>
-                    <div class="metric-value" id="posicaoRanking">-</div>
+                    <div class="metric-subtitle" id="posicaoRanking">-</div>
                 </div>
             </div>
 
-            <!-- Resumo de Pontos -->
+            <!-- Seção de Gráficos -->
+            <div class="charts-section">
+                <div class="card chart-card">
+                    <h2>Evolução das Notas</h2>
+                    <canvas id="notasChart"></canvas>
+                </div>
+
+                <div class="card chart-card">
+                    <h2>Frequência Mensal</h2>
+                    <canvas id="frequenciaChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Detalhamento da Pontuação -->
             <div class="card">
-                <h2 style="margin-bottom: 16px;">Resumo de Pontuação</h2>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
-                    <div style="padding: 16px; background: var(--cinza-claro); border-radius: 8px;">
-                        <div style="color: var(--cinza-escuro); font-size: 14px;">Pontos por Notas</div>
-                        <div style="font-size: 28px; font-weight: 700; color: var(--azul-royal);" id="pontosNotas">0</div>
+                <h2 style="margin-bottom: 24px;">Detalhamento da Pontuação</h2>
+                <div class="pontuacao-detalhes">
+                    <div class="detalhe-item">
+                        <div class="detalhe-header">
+                            <span class="detalhe-label">Pontos por Notas</span>
+                            <span class="detalhe-valor" id="pontosNotas">0/35</span>
+                        </div>
+                        <div class="progress-bar-detalhe">
+                            <div class="progress-fill-detalhe" id="pontosNotasBar"></div>
+                        </div>
                     </div>
-                    <div style="padding: 16px; background: var(--cinza-claro); border-radius: 8px;">
-                        <div style="color: var(--cinza-escuro); font-size: 14px;">Pontos por Frequência</div>
-                        <div style="font-size: 28px; font-weight: 700; color: var(--azul-royal);" id="pontosFrequencia">0</div>
+
+                    <div class="detalhe-item">
+                        <div class="detalhe-header">
+                            <span class="detalhe-label">Pontos por Frequência</span>
+                            <span class="detalhe-valor" id="pontosFrequencia">0/15</span>
+                        </div>
+                        <div class="progress-bar-detalhe">
+                            <div class="progress-fill-detalhe" id="pontosFrequenciaBar"></div>
+                        </div>
                     </div>
-                    <div style="padding: 16px; background: var(--cinza-claro); border-radius: 8px;">
-                        <div style="color: var(--cinza-escuro); font-size: 14px;">Pontos por Atividades</div>
-                        <div style="font-size: 28px; font-weight: 700; color: var(--azul-royal);" id="pontosExtras">0</div>
+
+                    <div class="detalhe-item">
+                        <div class="detalhe-header">
+                            <span class="detalhe-label">Pontos por Atividades Extras</span>
+                            <span class="detalhe-valor" id="pontosExtras">0/50</span>
+                        </div>
+                        <div class="progress-bar-detalhe">
+                            <div class="progress-fill-detalhe" id="pontosExtrasBar"></div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Seção de Notas -->
+            <!-- Desempenho por Matéria -->
             <div class="card">
-                <h2 style="margin-bottom: 16px;">Minhas Notas</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Disciplina</th>
-                            <th>Nota</th>
-                            <th>Bimestre</th>
-                            <th>Pontos Conquistados</th>
-                        </tr>
-                    </thead>
-                    <tbody id="notasTable">
-                        <tr>
-                            <td colspan="4" style="text-align: center;">Carregando...</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <h2 style="margin-bottom: 24px;">Desempenho por Matéria</h2>
+                <div class="materias-section" id="materiasSection">
+                    <!-- Será preenchido via JavaScript -->
+                </div>
             </div>
 
-            <!-- Seção de Frequência -->
-            <div class="card">
-                <h2 style="margin-bottom: 16px;">Frequência Mensal</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Mês/Ano</th>
-                            <th>Total de Aulas</th>
-                            <th>Presenças</th>
-                            <th>Faltas</th>
-                            <th>Percentual</th>
-                            <th>Pontos Conquistados</th>
-                        </tr>
-                    </thead>
-                    <tbody id="frequenciaTable">
-                        <tr>
-                            <td colspan="6" style="text-align: center;">Carregando...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Seção de Atividades Extras -->
+            <!-- Atividades Extracurriculares -->
             <div class="card">
                 <h2 style="margin-bottom: 16px;">Atividades Extracurriculares</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Atividade</th>
-                            <th>Tipo</th>
-                            <th>Pontos Conquistados</th>
-                        </tr>
-                    </thead>
-                    <tbody id="atividadesTable">
-                        <tr>
-                            <td colspan="3" style="text-align: center;">Carregando...</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="atividades-grid" id="atividadesGrid">
+                    <!-- Será preenchido via JavaScript -->
+                </div>
             </div>
         </div>
     </div>
