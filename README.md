@@ -18,6 +18,12 @@ Além disso, a plataforma inclui recursos de **acessibilidade e inclusão**, ofe
 
 ---
 
+## Demonstração
+
+![Demo do Pontua+](midia/tela.gif)
+
+---
+
 ## Sistema de Pontuação
 
 A pontuação de cada aluno é calculada com base em **3 pilares**, totalizando até **100 pontos por bimestre**:
