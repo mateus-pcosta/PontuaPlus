@@ -13,11 +13,6 @@ document.getElementById('cpf').addEventListener('input', function(e) {
     e.target.value = value;
 });
 
-// substitui a URL no histórico sem recarregar a página
-if (location.pathname.endsWith('.html')) {
-  history.replaceState(null, '', '/Cadastro');
-}
-
 // Submeter formulário
 document.getElementById('registroForm').addEventListener('submit', async function(e) {
     e.preventDefault();

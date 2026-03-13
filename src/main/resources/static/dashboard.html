@@ -5,14 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Pontua+</title>
     <link rel="stylesheet" href="/css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
-<body>
+<body style="background: var(--cinza-claro);">
     <div class="header">
         <h1>Pontua+</h1>
         <div class="user-info">
-            <span id="userName">Carregando...</span>
-            <div class="user-avatar" id="userAvatar" onclick="window.location.href='/perfil.html'">
+            <span id="userName" class="animate-fade-in">Carregando...</span>
+            <div class="user-avatar animate-wiggle" id="userAvatar" onclick="window.location.href='/perfil.html'">
                 M
             </div>
         </div>
@@ -27,30 +29,56 @@
         <div id="dashboardContent" style="display: none;">
             <!-- Cards Superiores -->
             <div class="top-cards">
-                <div class="metric-card">
-                    <div class="metric-label">Pontos Atuais</div>
+                <div class="metric-card animate-fade-in-up">
+                    <div class="metric-label">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle; margin-right: 6px;">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                        </svg>
+                        Pontos Atuais
+                    </div>
                     <div class="metric-value" id="totalPontos">0</div>
                     <div class="metric-subtitle">de 100 pontos</div>
                 </div>
 
-                <div class="metric-card">
-                    <div class="metric-label">Notas e Frequência</div>
+                <div class="metric-card animate-fade-in-up delay-100">
+                    <div class="metric-label">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle; margin-right: 6px;">
+                            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                            <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                        </svg>
+                        Notas e Frequência
+                    </div>
                     <div class="metric-value-small" id="notasFrequencia">0/50</div>
                     <div class="progress-bar">
                         <div class="progress-fill" id="notasFrequenciaBar"></div>
                     </div>
                 </div>
 
-                <div class="metric-card">
-                    <div class="metric-label">Evolução e Esforço</div>
+                <div class="metric-card animate-fade-in-up delay-200">
+                    <div class="metric-label">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle; margin-right: 6px;">
+                            <path d="M12 20V10"/>
+                            <path d="M18 20V4"/>
+                            <path d="M6 20v-4"/>
+                        </svg>
+                        Evolução e Esforço
+                    </div>
                     <div class="metric-value-small" id="evolucaoEsforco">0/50</div>
                     <div class="progress-bar">
                         <div class="progress-fill" id="evolucaoEsforcoBar"></div>
                     </div>
                 </div>
 
-                <div class="metric-card">
-                    <div class="metric-label">Ranking Atual</div>
+                <div class="metric-card animate-fade-in-up delay-300">
+                    <div class="metric-label">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle; margin-right: 6px;">
+                            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+                            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+                            <path d="M4 22h16"/>
+                            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+                        </svg>
+                        Ranking Atual
+                    </div>
                     <div class="metric-value" id="rankingAtual">-</div>
                     <div class="metric-subtitle" id="posicaoRanking">-</div>
                 </div>
@@ -58,24 +86,51 @@
 
             <!-- Seção de Gráficos -->
             <div class="charts-section">
-                <div class="card chart-card">
-                    <h2>Evolução das Notas</h2>
+                <div class="card chart-card card-glass animate-fade-in-up delay-400">
+                    <h2>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle; margin-right: 8px; color: var(--azul-royal);">
+                            <path d="M3 3v18h18"/>
+                            <path d="m19 9-5 5-4-4-3 3"/>
+                        </svg>
+                        Evolução das Notas
+                    </h2>
                     <canvas id="notasChart"></canvas>
                 </div>
 
-                <div class="card chart-card">
-                    <h2>Frequência Mensal</h2>
+                <div class="card chart-card card-glass animate-fade-in-up delay-500">
+                    <h2>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle; margin-right: 8px; color: var(--roxo-vibrante);">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        Frequência Mensal
+                    </h2>
                     <canvas id="frequenciaChart"></canvas>
                 </div>
             </div>
 
             <!-- Detalhamento da Pontuação -->
-            <div class="card">
-                <h2 style="margin-bottom: 24px;">Detalhamento da Pontuação</h2>
+            <div class="card card-glass animate-fade-in-up delay-600">
+                <h2 style="margin-bottom: 24px;" class="text-gradient">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle; margin-right: 8px;">
+                        <path d="M12 20V10"/>
+                        <path d="M18 20V4"/>
+                        <path d="M6 20v-4"/>
+                    </svg>
+                    Detalhamento da Pontuação
+                </h2>
                 <div class="pontuacao-detalhes">
                     <div class="detalhe-item">
                         <div class="detalhe-header">
-                            <span class="detalhe-label">Pontos por Notas</span>
+                            <span class="detalhe-label">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--azul-royal)" stroke-width="2" style="display: inline-block; vertical-align: middle; margin-right: 6px;">
+                                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                                    <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                                </svg>
+                                Pontos por Notas
+                            </span>
                             <span class="detalhe-valor" id="pontosNotas">0/35</span>
                         </div>
                         <div class="progress-bar-detalhe">
@@ -85,7 +140,13 @@
 
                     <div class="detalhe-item">
                         <div class="detalhe-header">
-                            <span class="detalhe-label">Pontos por Frequência</span>
+                            <span class="detalhe-label">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--azul-royal)" stroke-width="2" style="display: inline-block; vertical-align: middle; margin-right: 6px;">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                                Pontos por Frequência
+                            </span>
                             <span class="detalhe-valor" id="pontosFrequencia">0/15</span>
                         </div>
                         <div class="progress-bar-detalhe">
@@ -95,7 +156,12 @@
 
                     <div class="detalhe-item">
                         <div class="detalhe-header">
-                            <span class="detalhe-label">Pontos por Atividades Extras</span>
+                            <span class="detalhe-label">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--azul-royal)" stroke-width="2" style="display: inline-block; vertical-align: middle; margin-right: 6px;">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                </svg>
+                                Pontos por Atividades Extras
+                            </span>
                             <span class="detalhe-valor" id="pontosExtras">0/50</span>
                         </div>
                         <div class="progress-bar-detalhe">
@@ -106,16 +172,26 @@
             </div>
 
             <!-- Desempenho por Matéria -->
-            <div class="card">
-                <h2 style="margin-bottom: 24px;">Desempenho por Matéria</h2>
+            <div class="card card-glass animate-fade-in-up delay-700">
+                <h2 style="margin-bottom: 24px;" class="text-gradient">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle; margin-right: 8px;">
+                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+                    </svg>
+                    Desempenho por Matéria
+                </h2>
                 <div class="materias-section" id="materiasSection">
                     <!-- Será preenchido via JavaScript -->
                 </div>
             </div>
 
             <!-- Atividades Extracurriculares -->
-            <div class="card">
-                <h2 style="margin-bottom: 16px;">Atividades Extracurriculares</h2>
+            <div class="card card-glass animate-fade-in-up delay-800">
+                <h2 style="margin-bottom: 20px;" class="text-gradient">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle; margin-right: 8px;">
+                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                    </svg>
+                    Atividades Extracurriculares
+                </h2>
                 <div class="atividades-grid" id="atividadesGrid">
                     <!-- Será preenchido via JavaScript -->
                 </div>

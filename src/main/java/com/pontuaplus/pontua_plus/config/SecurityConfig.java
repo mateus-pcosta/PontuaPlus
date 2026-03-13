@@ -1,6 +1,5 @@
 package com.pontuaplus.pontua_plus.config;
 
-import com.pontuaplus.pontua_plus.security.CustomSuccessHandler;
 import com.pontuaplus.pontua_plus.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -25,8 +24,6 @@ import java.util.Arrays;
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
-    private final CustomSuccessHandler customSuccessHandler;
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -52,15 +49,14 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/index.html", "/login.html", "/registro.html", "professor-dashboard.html", "inicial.html", "colaborador-registro.html", "/perfil.html", "/dashboard.html",
-                                "/css/**", "/js/**", "/assets/**", "/icons/**", "/api/auth/**", "/api/registro/**", "/api/registro/colaborador").permitAll()
+                        .requestMatchers("/", "/index.html", "/login.html", "/registro.html", "/perfil.html", "/dashboard.html",
+                                "/css/**", "/js/**", "/assets/**", "/api/auth/**", "/api/registro/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login.html")
                         .loginProcessingUrl("/api/auth/login")
-                        //.defaultSuccessUrl("/dashboard.html", true)
-                        .successHandler(customSuccessHandler)
+                        .defaultSuccessUrl("/dashboard.html", true)
                         .permitAll()
                 )
                 .logout(logout -> logout

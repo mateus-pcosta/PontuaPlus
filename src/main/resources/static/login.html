@@ -5,132 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Pontua+</title>
     <link rel="stylesheet" href="/css/styles.css">
-    <style>
-        body {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, var(--azul-royal) 0%, var(--roxo-vibrante) 100%);
-        }
-
-
-        .login-container {
-            background: var(--branco);
-            border-radius: 16px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            padding: 48px;
-            width: 100%;
-            max-width: 450px;
-        }
-
-        .login-header {
-            text-align: center;
-            margin-bottom: 32px;
-        }
-
-        .login-header h1 {
-            background: linear-gradient(135deg, var(--azul-royal) 0%, var(--roxo-vibrante) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-size: 36px;
-            margin-bottom: 8px;
-        }
-
-        .login-header p {
-            color: var(--cinza-escuro);
-            font-size: 16px;
-        }
-
-        .alert {
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: none;
-        }
-
-        .alert-error {
-            background: #fee;
-            color: #c33;
-            border: 1px solid #fcc;
-        }
-
-        .alert-success {
-            background: #efe;
-            color: #3c3;
-            border: 1px solid #cfc;
-        }
-
-        .test-credentials {
-            background: var(--cinza-claro);
-            padding: 16px;
-            border-radius: 8px;
-            margin-top: 24px;
-            font-size: 14px;
-            color: var(--cinza-escuro);
-        }
-
-        .test-credentials strong {
-            color: var(--texto-escuro);
-        }
-
-        .registro-link {
-            text-align: center;
-            margin-top: 20px;
-            color: var(--cinza-escuro);
-        }
-
-        .registro-link a {
-            color: var(--azul-royal);
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .registro-link a:hover {
-            text-decoration: underline;
-        }
-
-
-        .btn-voltar {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            padding: 10px 16px;
-            background: var(--branco);
-            color: rgb(0, 0, 0);
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 14px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            transition: 0.2s;
-        }
-    
-        .btn-voltar:hover {
-            color: var(--branco);
-            background: var(--roxo-vibrante);
-        }
-
-        
-    </style>
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
+<body class="login-page">
+    <!-- Background Animado -->
+    <div class="hero-background">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
 
-<body>
-<a href="/inicial.html" class="btn-voltar">← Voltar</a>
-
-    <div class="login-container">
+    <div class="login-container animate-scale-in">
         <div class="login-header">
             <h1>Pontua+</h1>
             <p>Sistema Educacional de Gamificação</p>
         </div>
 
-        <div id="alert" class="alert"></div>
+        <div id="alert" class="alert" style="display: none;"></div>
 
         <form id="loginForm" action="/api/auth/login" method="post">
-            <div class="form-group">
-                <label for="username">E-mail</label>
+            <div class="form-group animate-fade-in-up delay-100">
+                <label for="username">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 6px;">
+                        <rect x="2" y="4" width="20" height="16" rx="2"/>
+                        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                    </svg>
+                    E-mail
+                </label>
                 <input
                     type="text"
                     id="username"
@@ -141,8 +43,14 @@
                 >
             </div>
 
-            <div class="form-group">
-                <label for="password">Senha</label>
+            <div class="form-group animate-fade-in-up delay-200">
+                <label for="password">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 6px;">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    Senha
+                </label>
                 <input
                     type="password"
                     id="password"
@@ -153,19 +61,34 @@
                 >
             </div>
 
-            <button type="submit" class="btn btn-primary" style="width: 100%;">
+            <button type="submit" class="btn btn-primary btn-lg animate-fade-in-up delay-300" style="width: 100%;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                    <polyline points="10 17 15 12 10 7"/>
+                    <line x1="15" y1="12" x2="3" y2="12"/>
+                </svg>
                 Entrar
             </button>
         </form>
 
-        <div class="registro-link">
+        <div class="registro-link animate-fade-in-up delay-400">
             Não tem cadastro? <a href="/registro.html">Cadastre-se aqui</a>
         </div>
 
-        <div class="test-credentials">
+        <div class="test-credentials animate-fade-in-up delay-500">
             <strong>Credenciais de Teste:</strong><br>
             E-mail: <code>mateus@pontua.com</code><br>
             Senha: <code>123456</code>
+        </div>
+
+        <div style="text-align: center; margin-top: 24px;" class="animate-fade-in-up delay-600">
+            <a href="/index.html" style="color: var(--cinza-escuro); text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; transition: color 0.3s ease;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m12 19-7-7 7-7"/>
+                    <path d="M19 12H5"/>
+                </svg>
+                Voltar para a página inicial
+            </a>
         </div>
     </div>
 
@@ -187,18 +110,25 @@
             const alert = document.getElementById('alert');
             alert.textContent = message;
             alert.className = `alert alert-${type}`;
-            alert.style.display = 'block';
-        }
+            alert.style.display = 'flex';
 
-
-        // substitui a URL no histórico sem recarregar a página
-        if (location.pathname.endsWith('.html')) {
-          //history.replaceState(null, '', '/login');
+            // Adiciona animação
+            alert.style.animation = 'fadeInDown 0.4s ease';
         }
 
         // Preencher automaticamente as credenciais de teste (desenvolvimento)
-        document.getElementById('username').value = '';
-        document.getElementById('password').value = '';
+        document.getElementById('username').value = 'mateus@pontua.com';
+        document.getElementById('password').value = '123456';
+
+        // Efeito de foco nos inputs
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('focused');
+            });
+        });
     </script>
 </body>
 </html>

@@ -4,7 +4,6 @@ import com.pontuaplus.pontua_plus.dto.RegistroAlunoDTO;
 import com.pontuaplus.pontua_plus.entity.Aluno;
 import com.pontuaplus.pontua_plus.enums.TipoUsuario;
 import com.pontuaplus.pontua_plus.repository.AlunoRepository;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +21,6 @@ public class RegistroController {
 
     private final AlunoRepository alunoRepository;
     private final PasswordEncoder passwordEncoder;
-    
 
     @PostMapping
     public ResponseEntity<?> registrarAluno(@Valid @RequestBody RegistroAlunoDTO dto) {

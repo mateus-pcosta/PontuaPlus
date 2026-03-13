@@ -5,98 +5,285 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil - Pontua+</title>
     <link rel="stylesheet" href="/css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <style>
+        .profile-header {
+            background: var(--gradient-primary);
+            padding: 40px 24px;
+            text-align: center;
+            color: var(--branco);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        }
+
+        .profile-avatar-large {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: 4px solid rgba(255, 255, 255, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 40px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+            animation: scaleIn 0.5s ease;
+        }
+
+        .profile-name {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .profile-role {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+        }
+
+        .info-label {
+            color: var(--cinza-escuro);
+            font-size: 13px;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .info-value {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--texto-escuro);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+        }
+
+        .info-item {
+            padding: 16px;
+            background: var(--cinza-claro);
+            border-radius: var(--radius-md);
+            transition: all var(--transition-smooth);
+        }
+
+        .info-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--sombra);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-primary);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--branco);
+        }
+    </style>
 </head>
-<body>
+<body style="background: var(--cinza-claro);">
     <div class="header">
         <h1>Pontua+</h1>
         <div class="user-info">
             <button class="btn btn-secondary" onclick="window.location.href='/dashboard.html'" style="margin-right: 12px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;">
+                    <path d="m12 19-7-7 7-7"/>
+                    <path d="M19 12H5"/>
+                </svg>
                 Voltar ao Dashboard
             </button>
-            <span id="userName">Carregando...</span>
+            <span id="userName" class="animate-fade-in">Carregando...</span>
             <div class="user-avatar" id="userAvatar">
                 M
             </div>
         </div>
     </div>
 
-    <div class="container">
+    <div class="container" style="max-width: 900px;">
         <div id="loading" class="loading">
             <div class="spinner"></div>
             <p>Carregando seu perfil...</p>
         </div>
 
         <div id="perfilContent" style="display: none;">
+            <!-- Header do Perfil -->
+            <div class="card" style="padding: 0; overflow: hidden; margin-bottom: 24px;" class="animate-scale-in">
+                <div class="profile-header">
+                    <div class="profile-avatar-large" id="avatarLarge">M</div>
+                    <div class="profile-name" id="profileName">-</div>
+                    <div class="profile-role" id="profileRole">Estudante</div>
+                </div>
+            </div>
+
             <!-- Informações Pessoais -->
-            <div class="card">
-                <h2 style="margin-bottom: 24px; background: linear-gradient(135deg, var(--azul-royal) 0%, var(--roxo-vibrante) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-                    Informações Pessoais
-                </h2>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px;">
-                    <div>
-                        <div style="color: var(--cinza-escuro); font-size: 14px; margin-bottom: 4px;">Nome Completo</div>
-                        <div style="font-size: 18px; font-weight: 600;" id="nomeCompleto">-</div>
+            <div class="card card-glass animate-fade-in-up">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
                     </div>
-                    <div>
-                        <div style="color: var(--cinza-escuro); font-size: 14px; margin-bottom: 4px;">E-mail</div>
-                        <div style="font-size: 18px; font-weight: 600;" id="email">-</div>
+                    <h2 class="text-gradient">Informações Pessoais</h2>
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                            Nome Completo
+                        </div>
+                        <div class="info-value" id="nomeCompleto">-</div>
                     </div>
-                    <div>
-                        <div style="color: var(--cinza-escuro); font-size: 14px; margin-bottom: 4px;">Data de Nascimento</div>
-                        <div style="font-size: 18px; font-weight: 600;" id="dataNascimento">-</div>
+                    <div class="info-item">
+                        <div class="info-label">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                            </svg>
+                            E-mail
+                        </div>
+                        <div class="info-value" id="email">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                            Data de Nascimento
+                        </div>
+                        <div class="info-value" id="dataNascimento">-</div>
                     </div>
                 </div>
             </div>
 
             <!-- Informações Acadêmicas -->
-            <div class="card">
-                <h2 style="margin-bottom: 24px; background: linear-gradient(135deg, var(--azul-royal) 0%, var(--roxo-vibrante) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-                    Informações Acadêmicas
-                </h2>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px;">
-                    <div>
-                        <div style="color: var(--cinza-escuro); font-size: 14px; margin-bottom: 4px;">Matrícula</div>
-                        <div style="font-size: 18px; font-weight: 600;" id="matricula">-</div>
+            <div class="card card-glass animate-fade-in-up delay-200">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                            <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                        </svg>
                     </div>
-                    <div>
-                        <div style="color: var(--cinza-escuro); font-size: 14px; margin-bottom: 4px;">Série</div>
-                        <div style="font-size: 18px; font-weight: 600;" id="serie">-</div>
+                    <h2 class="text-gradient">Informações Acadêmicas</h2>
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="9" y1="9" x2="15" y2="9"/>
+                                <line x1="9" y1="13" x2="15" y2="13"/>
+                            </svg>
+                            Matrícula
+                        </div>
+                        <div class="info-value" id="matricula">-</div>
                     </div>
-                    <div>
-                        <div style="color: var(--cinza-escuro); font-size: 14px; margin-bottom: 4px;">Colégio</div>
-                        <div style="font-size: 18px; font-weight: 600;" id="colegio">-</div>
+                    <div class="info-item">
+                        <div class="info-label">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+                            </svg>
+                            Série
+                        </div>
+                        <div class="info-value" id="serie">-</div>
                     </div>
-                    <div>
-                        <div style="color: var(--cinza-escuro); font-size: 14px; margin-bottom: 4px;">Turma</div>
-                        <div style="font-size: 18px; font-weight: 600;" id="turma">-</div>
+                    <div class="info-item">
+                        <div class="info-label">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                                <polyline points="9 22 9 12 15 12 15 22"/>
+                            </svg>
+                            Colégio
+                        </div>
+                        <div class="info-value" id="colegio">-</div>
                     </div>
-                    <div>
-                        <div style="color: var(--cinza-escuro); font-size: 14px; margin-bottom: 4px;">Data de Ingresso</div>
-                        <div style="font-size: 18px; font-weight: 600;" id="dataIngresso">-</div>
+                    <div class="info-item">
+                        <div class="info-label">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                            Turma
+                        </div>
+                        <div class="info-value" id="turma">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                            Data de Ingresso
+                        </div>
+                        <div class="info-value" id="dataIngresso">-</div>
                     </div>
                 </div>
             </div>
 
             <!-- Ações -->
-            <div class="card" style="text-align: center;">
-                <button class="btn btn-alert" onclick="logout()">
+            <div class="card card-glass animate-fade-in-up delay-400" style="text-align: center;">
+                <button class="btn btn-secondary" onclick="logout()" style="min-width: 200px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                        <polyline points="16 17 21 12 16 7"/>
+                        <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
                     Sair da Conta
                 </button>
             </div>
         </div>
     </div>
-
-    <!-- Modal Personalizado -->
-<div id="customModal" class="modal-overlay">
-    <div class="modal-content">
-        <h3>Tem certeza que deseja sair?😥</h3>
-
-        <div class="modal-buttons">
-            <button id="modalConfirm" class="btn-confirm">Sim, sair</button>
-            <button id="modalCancel" class="btn-cancel">Cancelar</button>
-        </div>
-    </div>
-</div>
 
     <script src="/js/perfil.js"></script>
 </body>
