@@ -12,6 +12,32 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PontuacaoService {
 
+    // Thresholds e pontos para notas
+    private static final double NOTA_EXCELENTE = 9.0;
+    private static final double NOTA_OTIMA = 8.0;
+    private static final double NOTA_BOA = 7.0;
+    private static final double NOTA_REGULAR = 6.0;
+    private static final double NOTA_MINIMA = 5.0;
+    private static final int PONTOS_NOTA_EXCELENTE = 35;
+    private static final int PONTOS_NOTA_OTIMA = 32;
+    private static final int PONTOS_NOTA_BOA = 25;
+    private static final int PONTOS_NOTA_REGULAR = 20;
+    private static final int PONTOS_NOTA_MINIMA = 15;
+
+    // Thresholds e pontos para frequência
+    private static final double FREQ_EXCELENTE = 95.0;
+    private static final double FREQ_OTIMA = 90.0;
+    private static final double FREQ_BOA = 85.0;
+    private static final double FREQ_REGULAR = 80.0;
+    private static final double FREQ_MINIMA = 75.0;
+    private static final int PONTOS_FREQ_EXCELENTE = 15;
+    private static final int PONTOS_FREQ_OTIMA = 13;
+    private static final int PONTOS_FREQ_BOA = 11;
+    private static final int PONTOS_FREQ_REGULAR = 9;
+    private static final int PONTOS_FREQ_MINIMA = 7;
+
+    private static final int MAX_PONTOS_EXTRAS = 50;
+
     private final PontuacaoRepository pontuacaoRepository;
     private final NotaRepository notaRepository;
     private final FrequenciaRepository frequenciaRepository;
@@ -26,7 +52,6 @@ public class PontuacaoService {
 
         Integer bimestreAtual = aluno.getBimestreAtual() != null ? aluno.getBimestreAtual() : 2;
 
-        // Calcular pontos de notas do bimestre atual (média das notas)
         List<Nota> notasBimestre = notaRepository.findByAluno(aluno).stream()
                 .filter(n -> n.getBimestre().equals(bimestreAtual))
                 .toList();
@@ -37,13 +62,10 @@ public class PontuacaoService {
                     .mapToDouble(Nota::getValor)
                     .average()
                     .orElse(0.0);
-
-            // Calcular pontos baseado na média (máximo 35 pontos)
             pontosNotas = calcularPontosPorMedia(mediaNotas);
         }
         pontuacao.setPontosNotas(pontosNotas);
 
-        // Calcular pontos de frequência do bimestre atual (média dos meses)
         List<Frequencia> frequenciasBimestre = frequenciaRepository.findByAluno(aluno).stream()
                 .filter(f -> f.getBimestre().equals(bimestreAtual))
                 .toList();
@@ -54,75 +76,52 @@ public class PontuacaoService {
                     .mapToDouble(Frequencia::getPercentualFrequencia)
                     .average()
                     .orElse(0.0);
-
-            // Calcular pontos baseado na frequência média (máximo 15 pontos)
             pontosFrequencia = calcularPontosPorFrequencia(mediaFrequencia);
         }
         pontuacao.setPontosFrequencia(pontosFrequencia);
 
-        // Calcular pontos de atividades extras do bimestre atual (máximo 50 pontos)
         List<AtividadeExtra> atividades = atividadeExtraRepository.findByAluno(aluno).stream()
                 .filter(a -> a.getBimestre().equals(bimestreAtual))
                 .toList();
 
-        int pontosExtras = atividades.stream()
-                .mapToInt(AtividadeExtra::getPontosConquistados)
-                .sum();
-
-        // Limitar a 50 pontos
-        pontosExtras = Math.min(pontosExtras, 50);
+        int pontosExtras = Math.min(
+                atividades.stream().mapToInt(AtividadeExtra::getPontosConquistados).sum(),
+                MAX_PONTOS_EXTRAS
+        );
         pontuacao.setPontosExtras(pontosExtras);
 
-        // Salvar pontuação (o cálculo total e ranking é feito automaticamente no @PrePersist/@PreUpdate)
         return pontuacaoRepository.save(pontuacao);
     }
 
     private int calcularPontosPorMedia(double media) {
-        if (media >= 9.0) {
-            return 35;
-        } else if (media >= 8.0) {
-            return 32;
-        } else if (media >= 7.0) {
-            return 25;
-        } else if (media >= 6.0) {
-            return 20;
-        } else if (media >= 5.0) {
-            return 15;
-        } else {
-            return 0;
-        }
+        if (media >= NOTA_EXCELENTE) return PONTOS_NOTA_EXCELENTE;
+        if (media >= NOTA_OTIMA)     return PONTOS_NOTA_OTIMA;
+        if (media >= NOTA_BOA)       return PONTOS_NOTA_BOA;
+        if (media >= NOTA_REGULAR)   return PONTOS_NOTA_REGULAR;
+        if (media >= NOTA_MINIMA)    return PONTOS_NOTA_MINIMA;
+        return 0;
     }
 
     private int calcularPontosPorFrequencia(double percentual) {
-        if (percentual >= 95.0) {
-            return 15;
-        } else if (percentual >= 90.0) {
-            return 13;
-        } else if (percentual >= 85.0) {
-            return 11;
-        } else if (percentual >= 80.0) {
-            return 9;
-        } else if (percentual >= 75.0) {
-            return 7;
-        } else {
-            return 0;
-        }
+        if (percentual >= FREQ_EXCELENTE) return PONTOS_FREQ_EXCELENTE;
+        if (percentual >= FREQ_OTIMA)     return PONTOS_FREQ_OTIMA;
+        if (percentual >= FREQ_BOA)       return PONTOS_FREQ_BOA;
+        if (percentual >= FREQ_REGULAR)   return PONTOS_FREQ_REGULAR;
+        if (percentual >= FREQ_MINIMA)    return PONTOS_FREQ_MINIMA;
+        return 0;
     }
 
     @Transactional
     public void atualizarRankings() {
         List<Pontuacao> pontuacoes = pontuacaoRepository.findAllOrderByTotalPontosDesc();
-
         for (int i = 0; i < pontuacoes.size(); i++) {
-            Pontuacao pontuacao = pontuacoes.get(i);
-            pontuacao.setPosicaoRanking(i + 1);
-            pontuacaoRepository.save(pontuacao);
+            pontuacoes.get(i).setPosicaoRanking(i + 1);
+            pontuacaoRepository.save(pontuacoes.get(i));
         }
     }
 
     public Pontuacao obterPontuacaoPorAluno(Long alunoId) {
-        return pontuacaoRepository.findByAlunoId(alunoId)
-                .orElse(null);
+        return pontuacaoRepository.findByAlunoId(alunoId).orElse(null);
     }
 
     public List<Pontuacao> obterRanking() {
