@@ -1,4 +1,11 @@
 // Dashboard JavaScript - Redesigned
+
+function escapeHtml(value) {
+    const div = document.createElement('div');
+    div.textContent = String(value ?? '');
+    return div.innerHTML;
+}
+
 const mesesNomes = [
     'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
     'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
@@ -347,7 +354,7 @@ function renderizarDesempenhoPorMateria(notas) {
 
         html += `
             <div class="materia-item">
-                <div class="materia-nome">${disciplina}</div>
+                <div class="materia-nome">${escapeHtml(disciplina)}</div>
                 <div class="materia-bar-container">
                     <div class="materia-bar-fill" style="width: ${percentual}%">
                         ${media.toFixed(1)}
@@ -372,9 +379,9 @@ function renderizarAtividades(atividades) {
 
     atividadesGrid.innerHTML = atividades.map(atividade => `
         <div class="atividade-card">
-            <div class="atividade-nome">${atividade.nome}</div>
-            <div class="atividade-tipo">${atividade.tipo}</div>
-            <div class="atividade-pontos">+${atividade.pontosConquistados} pontos</div>
+            <div class="atividade-nome">${escapeHtml(atividade.nome)}</div>
+            <div class="atividade-tipo">${escapeHtml(atividade.tipo)}</div>
+            <div class="atividade-pontos">+${escapeHtml(atividade.pontosConquistados)} pontos</div>
         </div>
     `).join('');
 }
