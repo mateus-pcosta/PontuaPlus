@@ -1,5 +1,6 @@
 package com.pontuaplus.pontua_plus.controller;
 
+import com.pontuaplus.pontua_plus.dto.ColaboradorDTO;
 import com.pontuaplus.pontua_plus.entity.Colaborador;
 import com.pontuaplus.pontua_plus.repository.ColaboradorRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,14 +17,13 @@ public class ColaboradorAuthController {
     private final ColaboradorRepository colaboradorRepository;
 
     @GetMapping("/me")
-    public ResponseEntity<?> getColaboradorLogado() {
+    public ResponseEntity<ColaboradorDTO> getColaboradorLogado() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
 
         Colaborador colaborador = colaboradorRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Colaborador não encontrado"));
 
-        return ResponseEntity.ok(colaborador);
+        return ResponseEntity.ok(ColaboradorDTO.fromEntity(colaborador));
     }
 }
-
