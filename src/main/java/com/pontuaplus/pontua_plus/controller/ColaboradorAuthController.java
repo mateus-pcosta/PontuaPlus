@@ -2,6 +2,7 @@ package com.pontuaplus.pontua_plus.controller;
 
 import com.pontuaplus.pontua_plus.dto.ColaboradorDTO;
 import com.pontuaplus.pontua_plus.entity.Colaborador;
+import com.pontuaplus.pontua_plus.exception.ResourceNotFoundException;
 import com.pontuaplus.pontua_plus.repository.ColaboradorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class ColaboradorAuthController {
         String email = auth.getName();
 
         Colaborador colaborador = colaboradorRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Colaborador não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Colaborador não encontrado"));
 
         return ResponseEntity.ok(ColaboradorDTO.fromEntity(colaborador));
     }

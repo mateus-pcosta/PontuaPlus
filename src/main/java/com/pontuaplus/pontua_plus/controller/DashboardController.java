@@ -2,6 +2,7 @@ package com.pontuaplus.pontua_plus.controller;
 
 import com.pontuaplus.pontua_plus.dto.DashboardDTO;
 import com.pontuaplus.pontua_plus.entity.*;
+import com.pontuaplus.pontua_plus.exception.ResourceNotFoundException;
 import com.pontuaplus.pontua_plus.repository.*;
 import com.pontuaplus.pontua_plus.service.AlunoService;
 import com.pontuaplus.pontua_plus.service.PontuacaoService;
@@ -30,7 +31,7 @@ public class DashboardController {
         String email = auth.getName();
 
         Aluno aluno = alunoService.buscarPorEmail(email)
-                .orElseThrow(() -> new RuntimeException("Aluno não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Aluno não encontrado"));
 
         // Buscar ou calcular pontuação
         Pontuacao pontuacao = pontuacaoService.calcularPontuacaoAluno(aluno);
