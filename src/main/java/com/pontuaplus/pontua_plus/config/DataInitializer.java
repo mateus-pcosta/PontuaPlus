@@ -6,6 +6,8 @@ import com.pontuaplus.pontua_plus.enums.TipoUsuario;
 import com.pontuaplus.pontua_plus.repository.*;
 import com.pontuaplus.pontua_plus.service.PontuacaoService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -18,6 +20,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
 
+    private static final Logger log = LoggerFactory.getLogger(DataInitializer.class);
+
     private final AlunoRepository alunoRepository;
     private final NotaRepository notaRepository;
     private final FrequenciaRepository frequenciaRepository;
@@ -27,19 +31,17 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Verificar se já existe o aluno Mateus
         if (alunoRepository.findByEmail("mateus@pontua.com").isPresent()) {
-            System.out.println("Dados já inicializados!");
+            log.info("Dados de teste já inicializados, pulando.");
             return;
         }
 
-        System.out.println("Inicializando dados do usuário Mateus...");
+        log.info("Inicializando dados de teste...");
 
-        // Criar aluno Mateus
         Aluno mateus = new Aluno();
         mateus.setNome("Mateus Pessoa Costa");
         mateus.setEmail("mateus@pontua.com");
-        mateus.setSenha(passwordEncoder.encode("123456")); // Senha: 123456
+        mateus.setSenha(passwordEncoder.encode("123456"));
         mateus.setTipo(TipoUsuario.ALUNO);
         mateus.setMatricula("2024001");
         mateus.setCpf("12345678900");
@@ -48,14 +50,13 @@ public class DataInitializer implements CommandLineRunner {
         mateus.setDataNascimento(LocalDate.of(2009, 5, 15));
         mateus.setDataIngresso(LocalDate.of(2024, 1, 1));
         mateus.setTurma("9A");
-        mateus.setBimestreAtual(2); // 2º Bimestre (Junho/Julho)
+        mateus.setBimestreAtual(2);
 
         mateus = alunoRepository.save(mateus);
-        System.out.println("Aluno Mateus criado com sucesso!");
+        log.info("Aluno criado: {}", mateus.getEmail());
 
-        // Criar notas do 2º Bimestre
         List<String> disciplinas = Arrays.asList("Matemática", "Inglês", "Português", "Ciências", "História");
-        List<Double> notasValores = Arrays.asList(8.0, 7.5, 7.0, 8.0, 7.0); // Média 7.5
+        List<Double> notasValores = Arrays.asList(8.0, 7.5, 7.0, 8.0, 7.0);
 
         for (int i = 0; i < disciplinas.size(); i++) {
             Nota nota = new Nota();
@@ -65,10 +66,7 @@ public class DataInitializer implements CommandLineRunner {
             nota.setBimestre(2);
             notaRepository.save(nota);
         }
-        System.out.println("Notas do 2º Bimestre criadas com sucesso!");
 
-        // Criar frequências de Junho e Julho (2º Bimestre)
-        // Junho: 20 aulas, 18 presenças, 2 faltas = 90%
         Frequencia junho = new Frequencia();
         junho.setAluno(mateus);
         junho.setMes(6);
@@ -79,7 +77,6 @@ public class DataInitializer implements CommandLineRunner {
         junho.setFaltas(2);
         frequenciaRepository.save(junho);
 
-        // Julho: 20 aulas, 17 presenças, 3 faltas = 85%
         Frequencia julho = new Frequencia();
         julho.setAluno(mateus);
         julho.setMes(7);
@@ -90,9 +87,6 @@ public class DataInitializer implements CommandLineRunner {
         julho.setFaltas(3);
         frequenciaRepository.save(julho);
 
-        System.out.println("Frequências de Junho e Julho criadas com sucesso!");
-
-        // Criar atividades extracurriculares do 2º Bimestre
         AtividadeExtra liderTurma = new AtividadeExtra();
         liderTurma.setAluno(mateus);
         liderTurma.setNome("Líder de Turma");
@@ -121,18 +115,9 @@ public class DataInitializer implements CommandLineRunner {
         conteudoAudio.setBimestre(2);
         atividadeExtraRepository.save(conteudoAudio);
 
-        System.out.println("Atividades extracurriculares do 2º Bimestre criadas com sucesso!");
-
-        // Calcular pontuação
         pontuacaoService.calcularPontuacaoAluno(mateus);
         pontuacaoService.atualizarRankings();
-        System.out.println("Pontuação calculada com sucesso!");
 
-        System.out.println("===========================================");
-        System.out.println("DADOS INICIALIZADOS COM SUCESSO!");
-        System.out.println("===========================================");
-        System.out.println("Login: mateus@pontua.com");
-        System.out.println("Senha: 123456");
-        System.out.println("===========================================");
+        log.info("Dados de teste inicializados. Login: mateus@pontua.com / Senha: 123456");
     }
 }
