@@ -28,41 +28,6 @@ async function carregarPerfil() {
     }
 }
 
-fetch('/api/colaborador/me')
-  .then(r => r.json())
-  .then(data => {
-      document.getElementById('userName').textContent = data.nome;
-
-      const iniciais = data.nome
-          .split(' ')
-          .map(n => n[0])
-          .slice(0, 2)
-          .join('');
-
-document.getElementById('userAvatar').textContent = iniciais;
-// Ocultar loading e mostrar conteúdo
-document.getElementById('loading').style.display = 'none';
-document.getElementById('perfilContent').style.display = 'block';
-    
-// Atualizar nome do usuário no header
-document.getElementById('userName').textContent = data.nome;
-document.getElementById('userAvatar').textContent = iniciais;
-    
-// Informações Pessoais
-document.getElementById('nomeCompleto').textContent = data.nome;
-document.getElementById('email').textContent = data.email;
-document.getElementById('dataNascimento').textContent = formatarData(data.dataNascimento);
-    
-// Informações Acadêmicas
-document.getElementById('matricula').textContent = data.matricula;
-    
-document.getElementById('colegio').textContent = data.colegio;
-    
-document.getElementById('dataIngresso').textContent = formatarData(data.dataIngresso);
-});
-
-
-
 
 // Renderizar dados do perfil
 function renderizarPerfil(aluno) {
