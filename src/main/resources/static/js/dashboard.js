@@ -30,7 +30,6 @@ async function carregarDashboard() {
         const data = await response.json();
         renderizarDashboard(data);
     } catch (error) {
-        console.error('Erro:', error);
         alert('Erro ao carregar dados do dashboard');
     }
 }

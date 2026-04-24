@@ -16,7 +16,6 @@ async function carregarPerfil() {
         const aluno = await response.json();
         renderizarPerfil(aluno);
     } catch (error) {
-        console.error('Erro:', error);
         alert('Erro ao carregar dados do perfil');
     }
 }

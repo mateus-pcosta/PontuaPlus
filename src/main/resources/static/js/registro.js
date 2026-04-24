@@ -61,7 +61,6 @@ document.getElementById('registroForm').addEventListener('submit', async functio
             showAlert(result.error || 'Erro ao realizar cadastro', 'error');
         }
     } catch (error) {
-        console.error('Erro:', error);
         showAlert('Erro ao realizar cadastro. Tente novamente.', 'error');
     }
 });

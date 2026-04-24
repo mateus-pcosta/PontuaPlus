@@ -23,7 +23,6 @@ async function carregarPerfil() {
         const colaborador = await response.json();
         renderizarPerfil(colaborador);
     } catch (error) {
-        console.error('Erro:', error);
         alert('Erro ao carregar dados do perfil');
     }
 }
