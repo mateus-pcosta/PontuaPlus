@@ -57,7 +57,7 @@ O navegador envia uma requisição `GET /api/dashboard` com o cookie de sessão 
 
 ---
 
-## 2. Controller
+## 2. Controller ( Mapeamento do site )
 
 Os controllers ficam em `src/main/java/.../controller/` e são anotados com `@RestController`. Eles têm três responsabilidades:
 
