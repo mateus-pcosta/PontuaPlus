@@ -2,19 +2,18 @@ package com.pontuaplus.pontua_plus.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "colaboradores")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 public class Colaborador extends Usuario {
 
     @NotBlank(message = "Matrícula é obrigatória")
@@ -34,9 +33,4 @@ public class Colaborador extends Usuario {
 
     @Column(name = "data_ingresso")
     private LocalDate dataIngresso;
-
-    /*@Enumerated(EnumType.STRING)
-    @Column(name = "tipo")
-    private TipoUsuario tipo;*/    
 }
-

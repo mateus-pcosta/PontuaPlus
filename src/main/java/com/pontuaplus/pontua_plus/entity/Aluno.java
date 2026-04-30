@@ -2,10 +2,7 @@ package com.pontuaplus.pontua_plus.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -13,10 +10,12 @@ import java.util.List;
 
 @Entity
 @Table(name = "alunos")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true, exclude = {"notas", "frequencias", "atividadesExtras", "pontuacao"})
 public class Aluno extends Usuario {
 
     @NotBlank(message = "Matrícula é obrigatória")
@@ -45,7 +44,7 @@ public class Aluno extends Usuario {
     private String turma;
 
     @Column(name = "bimestre_atual")
-    private Integer bimestreAtual = 2; // Bimestre padrão atual
+    private Integer bimestreAtual = 2;
 
     @OneToMany(mappedBy = "aluno", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Nota> notas = new ArrayList<>();
