@@ -11,4 +11,5 @@ import java.util.List;
 public interface FrequenciaRepository extends JpaRepository<Frequencia, Long> {
     List<Frequencia> findByAluno(Aluno aluno);
     List<Frequencia> findByAlunoId(Long alunoId);
+    List<Frequencia> findByAlunoAndBimestre(Aluno aluno, Integer bimestre);
 }

@@ -7,34 +7,33 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class PontuacaoService {
 
-    // Thresholds e pontos para notas
     private static final double NOTA_EXCELENTE = 9.0;
-    private static final double NOTA_OTIMA = 8.0;
-    private static final double NOTA_BOA = 7.0;
-    private static final double NOTA_REGULAR = 6.0;
-    private static final double NOTA_MINIMA = 5.0;
+    private static final double NOTA_OTIMA     = 8.0;
+    private static final double NOTA_BOA       = 7.0;
+    private static final double NOTA_REGULAR   = 6.0;
+    private static final double NOTA_MINIMA    = 5.0;
     private static final int PONTOS_NOTA_EXCELENTE = 35;
-    private static final int PONTOS_NOTA_OTIMA = 32;
-    private static final int PONTOS_NOTA_BOA = 25;
-    private static final int PONTOS_NOTA_REGULAR = 20;
-    private static final int PONTOS_NOTA_MINIMA = 15;
+    private static final int PONTOS_NOTA_OTIMA     = 32;
+    private static final int PONTOS_NOTA_BOA       = 25;
+    private static final int PONTOS_NOTA_REGULAR   = 20;
+    private static final int PONTOS_NOTA_MINIMA    = 15;
 
-    // Thresholds e pontos para frequência
     private static final double FREQ_EXCELENTE = 95.0;
-    private static final double FREQ_OTIMA = 90.0;
-    private static final double FREQ_BOA = 85.0;
-    private static final double FREQ_REGULAR = 80.0;
-    private static final double FREQ_MINIMA = 75.0;
+    private static final double FREQ_OTIMA     = 90.0;
+    private static final double FREQ_BOA       = 85.0;
+    private static final double FREQ_REGULAR   = 80.0;
+    private static final double FREQ_MINIMA    = 75.0;
     private static final int PONTOS_FREQ_EXCELENTE = 15;
-    private static final int PONTOS_FREQ_OTIMA = 13;
-    private static final int PONTOS_FREQ_BOA = 11;
-    private static final int PONTOS_FREQ_REGULAR = 9;
-    private static final int PONTOS_FREQ_MINIMA = 7;
+    private static final int PONTOS_FREQ_OTIMA     = 13;
+    private static final int PONTOS_FREQ_BOA       = 11;
+    private static final int PONTOS_FREQ_REGULAR   = 9;
+    private static final int PONTOS_FREQ_MINIMA    = 7;
 
     private static final int MAX_PONTOS_EXTRAS = 50;
 
@@ -43,6 +42,11 @@ public class PontuacaoService {
     private final FrequenciaRepository frequenciaRepository;
     private final AtividadeExtraRepository atividadeExtraRepository;
 
+    @Transactional(readOnly = true)
+    public Optional<Pontuacao> buscarPorAluno(Aluno aluno) {
+        return pontuacaoRepository.findByAluno(aluno);
+    }
+
     @Transactional
     public Pontuacao calcularPontuacaoAluno(Aluno aluno) {
         Pontuacao pontuacao = pontuacaoRepository.findByAluno(aluno)
@@ -50,47 +54,52 @@ public class PontuacaoService {
 
         pontuacao.setAluno(aluno);
 
-        Integer bimestreAtual = aluno.getBimestreAtual() != null ? aluno.getBimestreAtual() : 2;
+        int bimestre = aluno.getBimestreAtual() != null ? aluno.getBimestreAtual() : 2;
 
-        List<Nota> notasBimestre = notaRepository.findByAluno(aluno).stream()
-                .filter(n -> n.getBimestre().equals(bimestreAtual))
-                .toList();
-
+        List<Nota> notas = notaRepository.findByAlunoAndBimestre(aluno, bimestre);
         int pontosNotas = 0;
-        if (!notasBimestre.isEmpty()) {
-            double mediaNotas = notasBimestre.stream()
-                    .mapToDouble(Nota::getValor)
-                    .average()
-                    .orElse(0.0);
-            pontosNotas = calcularPontosPorMedia(mediaNotas);
+        if (!notas.isEmpty()) {
+            double media = notas.stream().mapToDouble(Nota::getValor).average().orElse(0.0);
+            pontosNotas = calcularPontosPorMedia(media);
         }
         pontuacao.setPontosNotas(pontosNotas);
 
-        List<Frequencia> frequenciasBimestre = frequenciaRepository.findByAluno(aluno).stream()
-                .filter(f -> f.getBimestre().equals(bimestreAtual))
-                .toList();
-
+        List<Frequencia> frequencias = frequenciaRepository.findByAlunoAndBimestre(aluno, bimestre);
         int pontosFrequencia = 0;
-        if (!frequenciasBimestre.isEmpty()) {
-            double mediaFrequencia = frequenciasBimestre.stream()
-                    .mapToDouble(Frequencia::getPercentualFrequencia)
-                    .average()
-                    .orElse(0.0);
-            pontosFrequencia = calcularPontosPorFrequencia(mediaFrequencia);
+        if (!frequencias.isEmpty()) {
+            double media = frequencias.stream()
+                    .mapToDouble(Frequencia::getPercentualFrequencia).average().orElse(0.0);
+            pontosFrequencia = calcularPontosPorFrequencia(media);
         }
         pontuacao.setPontosFrequencia(pontosFrequencia);
 
-        List<AtividadeExtra> atividades = atividadeExtraRepository.findByAluno(aluno).stream()
-                .filter(a -> a.getBimestre().equals(bimestreAtual))
-                .toList();
-
+        List<AtividadeExtra> atividades = atividadeExtraRepository.findByAlunoAndBimestre(aluno, bimestre);
         int pontosExtras = Math.min(
                 atividades.stream().mapToInt(AtividadeExtra::getPontosConquistados).sum(),
                 MAX_PONTOS_EXTRAS
         );
         pontuacao.setPontosExtras(pontosExtras);
 
-        return pontuacaoRepository.save(pontuacao);
+        Pontuacao salva = pontuacaoRepository.save(pontuacao);
+        atualizarRankings();
+        return salva;
+    }
+
+    @Transactional
+    public void atualizarRankings() {
+        List<Pontuacao> pontuacoes = pontuacaoRepository.findAllOrderByTotalPontosDesc();
+        for (int i = 0; i < pontuacoes.size(); i++) {
+            pontuacoes.get(i).setPosicaoRanking(i + 1);
+            pontuacaoRepository.save(pontuacoes.get(i));
+        }
+    }
+
+    public Optional<Pontuacao> obterPontuacaoPorAluno(Long alunoId) {
+        return pontuacaoRepository.findByAlunoId(alunoId);
+    }
+
+    public List<Pontuacao> obterRanking() {
+        return pontuacaoRepository.findAllOrderByTotalPontosDesc();
     }
 
     private int calcularPontosPorMedia(double media) {
@@ -109,22 +118,5 @@ public class PontuacaoService {
         if (percentual >= FREQ_REGULAR)   return PONTOS_FREQ_REGULAR;
         if (percentual >= FREQ_MINIMA)    return PONTOS_FREQ_MINIMA;
         return 0;
-    }
-
-    @Transactional
-    public void atualizarRankings() {
-        List<Pontuacao> pontuacoes = pontuacaoRepository.findAllOrderByTotalPontosDesc();
-        for (int i = 0; i < pontuacoes.size(); i++) {
-            pontuacoes.get(i).setPosicaoRanking(i + 1);
-            pontuacaoRepository.save(pontuacoes.get(i));
-        }
-    }
-
-    public Pontuacao obterPontuacaoPorAluno(Long alunoId) {
-        return pontuacaoRepository.findByAlunoId(alunoId).orElse(null);
-    }
-
-    public List<Pontuacao> obterRanking() {
-        return pontuacaoRepository.findAllOrderByTotalPontosDesc();
     }
 }

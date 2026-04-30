@@ -11,4 +11,5 @@ import java.util.List;
 public interface NotaRepository extends JpaRepository<Nota, Long> {
     List<Nota> findByAluno(Aluno aluno);
     List<Nota> findByAlunoId(Long alunoId);
+    List<Nota> findByAlunoAndBimestre(Aluno aluno, Integer bimestre);
 }

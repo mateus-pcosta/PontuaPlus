@@ -11,4 +11,5 @@ import java.util.List;
 public interface AtividadeExtraRepository extends JpaRepository<AtividadeExtra, Long> {
     List<AtividadeExtra> findByAluno(Aluno aluno);
     List<AtividadeExtra> findByAlunoId(Long alunoId);
+    List<AtividadeExtra> findByAlunoAndBimestre(Aluno aluno, Integer bimestre);
 }

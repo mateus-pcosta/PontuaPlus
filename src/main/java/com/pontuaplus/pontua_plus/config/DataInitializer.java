@@ -3,6 +3,7 @@ package com.pontuaplus.pontua_plus.config;
 import com.pontuaplus.pontua_plus.entity.*;
 import com.pontuaplus.pontua_plus.enums.TipoAtividade;
 import com.pontuaplus.pontua_plus.enums.TipoUsuario;
+import org.springframework.context.annotation.Profile;
 import com.pontuaplus.pontua_plus.repository.*;
 import com.pontuaplus.pontua_plus.service.PontuacaoService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
+@Profile("dev")
 @Component
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
