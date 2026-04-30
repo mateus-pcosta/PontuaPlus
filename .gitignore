@@ -35,3 +35,6 @@ build/
 ### Environment & secrets ###
 .env
 application-local.properties
+
+### Notas pessoais (local only) ###
+docs_changes/
