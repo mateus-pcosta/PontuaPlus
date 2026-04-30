@@ -73,27 +73,18 @@ Os controllers ficam em `src/main/java/.../controller/` e são anotados com `@Re
 @RequiredArgsConstructor
 public class DashboardController {
 
-    private final AlunoService alunoService;
-    private final PontuacaoService pontuacaoService;
+    private final DashboardService dashboardService;
 
     @GetMapping
     public ResponseEntity<DashboardDTO> getDashboard() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();                          // identifica o usuário pela sessão
-
-        Aluno aluno = alunoService.buscarPorEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Aluno não encontrado"));
-
-        Pontuacao pontuacao = pontuacaoService.calcularPontuacaoAluno(aluno);
-        pontuacaoService.atualizarRankings();
-
-        // monta e retorna o DTO — nunca expõe a entidade diretamente
-        return ResponseEntity.ok(DashboardDTO.fromEntities(aluno, pontuacao, ...));
+        return ResponseEntity.ok(dashboardService.montarDashboard(email));
     }
 }
 ```
 
-Controllers **não contêm regras de negócio** — apenas orquestram a chamada aos services e formatam a resposta.
+Controllers **não contêm regras de negócio** — apenas orquestram a chamada ao service e devolvem a resposta. Todo o processamento vive no `DashboardService`.
 
 | Controller | Rota | Função |
 |---|---|---|
@@ -125,12 +116,12 @@ public class PontuacaoService {
         Pontuacao pontuacao = pontuacaoRepository.findByAluno(aluno)
                 .orElse(new Pontuacao());
 
-        // filtra notas do bimestre atual e calcula a média
-        List<Nota> notasBimestre = notaRepository.findByAluno(aluno).stream()
-                .filter(n -> n.getBimestre().equals(aluno.getBimestreAtual()))
-                .toList();
+        int bimestre = aluno.getBimestreAtual() != null ? aluno.getBimestreAtual() : 2;
 
-        double media = notasBimestre.stream()
+        // busca diretamente no banco somente as notas do bimestre atual
+        List<Nota> notas = notaRepository.findByAlunoAndBimestre(aluno, bimestre);
+
+        double media = notas.stream()
                 .mapToDouble(Nota::getValor).average().orElse(0.0);
 
         pontuacao.setPontosNotas(calcularPontosPorMedia(media));   // regra de negócio aqui
@@ -139,11 +130,14 @@ public class PontuacaoService {
 }
 ```
 
+> O método usa `findByAlunoAndBimestre` — uma query derivada do Spring Data JPA — em vez de carregar todas as notas e filtrar em memória. Isso reduz o volume de dados trafegados entre banco e aplicação.
+
 | Service | Responsabilidade |
 |---|---|
-| `AlunoService` | CRUD de alunos |
-| `ColaboradorService` | CRUD de colaboradores |
-| `PontuacaoService` | Cálculo de pontos, ranking e bimestre |
+| `AlunoService` | CRUD de alunos, validação de duplicatas, cálculo do bimestre atual |
+| `ColaboradorService` | CRUD de colaboradores, validação de duplicatas |
+| `PontuacaoService` | Cálculo de pontos por bimestre e atualização do ranking |
+| `DashboardService` | Montagem do DTO do dashboard (leitura, sem escrita) |
 | `CustomUserDetailsService` | Carrega usuário para o Spring Security |
 
 A anotação `@Transactional` garante que todas as operações de um método sejam confirmadas juntas ou desfeitas em caso de erro.
@@ -266,11 +260,15 @@ html += `<div class="materia-nome">${escapeHtml(disciplina)}</div>`;
 1. Aluno abre dashboard.html no navegador
 2. dashboard.js executa fetch('/api/dashboard')
 3. Spring Security valida o cookie de sessão
-4. DashboardController.getDashboard() é chamado
-5. AlunoService.buscarPorEmail() consulta AlunoRepository
-6. AlunoRepository executa SELECT na tabela alunos
-7. PontuacaoService.calcularPontuacaoAluno() aplica regras de negócio
-8. PontuacaoRepository salva o resultado atualizado
-9. DashboardDTO.fromEntities() monta o JSON de resposta
-10. dashboard.js recebe o JSON e atualiza a tela
+4. DashboardController.getDashboard() é chamado — extrai o e-mail da sessão
+5. DashboardService.montarDashboard(email) assume o controle
+6. AlunoRepository executa SELECT na tabela alunos (busca por e-mail)
+7. PontuacaoRepository busca a pontuação existente do aluno (sem recalcular)
+8. NotaRepository, FrequenciaRepository e AtividadeExtraRepository buscam
+   os registros do bimestre atual com queries filtradas no banco
+9. DashboardService monta e retorna o DashboardDTO
+10. DashboardController devolve ResponseEntity<DashboardDTO> com HTTP 200
+11. dashboard.js recebe o JSON e atualiza a tela via escapeHtml()
 ```
+
+> O dashboard é uma operação de **leitura pura** (`@Transactional(readOnly = true)`). O recálculo de pontuação só ocorre quando notas, frequências ou atividades são registradas — não a cada `GET /api/dashboard`.

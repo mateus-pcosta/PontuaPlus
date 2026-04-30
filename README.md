@@ -91,9 +91,13 @@ A pontuação de cada aluno é calculada com base em **3 pilares**, totalizando 
 
 ## Pré-requisitos
 
+**Sem Docker:**
 - [Java 17+](https://adoptium.net/)
 - [MySQL 8.0+](https://dev.mysql.com/downloads/)
 - Maven (ou use o `mvnw` incluso no projeto)
+
+**Com Docker:**
+- [Docker](https://www.docker.com/) e [Docker Compose](https://docs.docker.com/compose/)
 
 ---
 
@@ -106,32 +110,50 @@ git clone https://github.com/seu-usuario/pontua-plus.git
 cd pontua-plus
 ```
 
-### 2. Configure o banco de dados
+### 2. Configure as variáveis de ambiente
 
-Acesse o MySQL e crie o banco:
+Copie o arquivo de exemplo e preencha com suas credenciais:
+
+```bash
+cp .env.example .env
+```
+
+```dotenv
+# .env
+DB_HOST=localhost
+DB_PORT=3306
+DB_USERNAME=root
+DB_PASSWORD=sua_senha_aqui
+```
+
+> As credenciais do banco são lidas via variáveis de ambiente (`${DB_PASSWORD}`, `${DB_USERNAME}`, etc.). Nunca suba o `.env` para o repositório.
+
+### 3a. Executar com Docker (recomendado)
+
+Sobe o MySQL e a aplicação de uma vez, com dados de exemplo já carregados:
+
+```bash
+docker-compose up --build
+```
+
+### 3b. Executar localmente (sem Docker)
+
+Crie o banco manualmente no MySQL:
 
 ```sql
 CREATE DATABASE pontua_db;
 ```
 
-Verifique as credenciais em `src/main/resources/application.properties`:
-
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/pontua_db
-spring.datasource.username=root
-spring.datasource.password=root
-```
-
-### 3. Execute o projeto
+Execute o script `create_database.sql` para criar as tabelas e carregar os dados de exemplo. Em seguida, inicie a aplicação com o perfil `dev`:
 
 **Windows:**
 ```bash
-.\mvnw.cmd spring-boot:run
+.\mvnw.cmd spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
 **Linux / macOS:**
 ```bash
-./mvnw spring-boot:run
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
 ### 4. Acesse o sistema
@@ -142,7 +164,7 @@ Abra no navegador: [http://localhost:8080](http://localhost:8080)
 - E-mail: `mateus@pontua.com`
 - Senha: `123456`
 
-> O sistema carrega automaticamente dados de exemplo ao iniciar (aluno Mateus Pessoa Costa com notas, frequências e atividades do 2º bimestre).
+> Os dados de exemplo (aluno Mateus Pessoa Costa com notas, frequências e atividades do 2º bimestre) são carregados automaticamente pelo `DataInitializer` quando o perfil `dev` está ativo.
 
 ---
 
@@ -152,16 +174,19 @@ Abra no navegador: [http://localhost:8080](http://localhost:8080)
 src/
 └── main/
     ├── java/com/pontuaplus/pontua_plus/
-    │   ├── config/         # Configurações de segurança e dados iniciais
+    │   ├── config/         # Configurações de segurança, CORS e dados iniciais (dev)
     │   ├── controller/     # Endpoints REST (Auth, Dashboard, Registro)
     │   ├── dto/            # Objetos de transferência de dados
     │   ├── entity/         # Entidades JPA (Aluno, Nota, Frequencia, etc.)
     │   ├── enums/          # Enumerações (Ranking, TipoAtividade, TipoUsuario)
+    │   ├── exception/      # Exceções customizadas e GlobalExceptionHandler
     │   ├── repository/     # Repositórios Spring Data JPA
-    │   └── service/        # Regras de negócio (PontuacaoService, AlunoService)
+    │   └── service/        # Regras de negócio (AlunoService, PontuacaoService, DashboardService, …)
     └── resources/
         ├── static/         # Frontend (HTML, CSS, JS)
-        └── application.properties
+        ├── application.properties
+        ├── application-dev.properties
+        └── application-prod.properties
 ```
 
 ---
@@ -180,6 +205,8 @@ src/
 
 - [Guia Rápido de Execução](GUIA_RAPIDO.md)
 - [Sistema de Pontuação Detalhado](NOVO_SISTEMA_PONTUACAO.md)
+- [Fluxo MVC — como uma requisição percorre a aplicação](docs/FLUXO_MVC.md)
+- [Changelog](CHANGELOG.md)
 
 ---
 
