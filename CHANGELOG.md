@@ -8,6 +8,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- Logos da marca integradas em todas as páginas — `logopreto.png` em headers brancos e `pontuamais_logo.png` no hero da `index.html`
 - Suporte a Docker com `Dockerfile` multi-stage e `docker-compose.yml` com MySQL + healthcheck
 - Perfis de ambiente `application-dev.properties` e `application-prod.properties`
 - `GlobalExceptionHandler` com respostas JSON padronizadas para erros 404, 409 e 500
@@ -22,6 +23,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 - `ConflictException` com retorno HTTP 409 para duplicatas de e-mail e matrícula
 
 ### Changed
+- Cards do dashboard (`metric-card`) migrados de fundo gradiente para fundo branco com valores em azul
+- Animação shimmer das barras de progresso alterada para tocar apenas uma vez ao carregar a página
 - Credenciais do banco movidas de `application.properties` para variáveis de ambiente (`${DB_PASSWORD}`)
 - `SecurityConfig` agora usa `CustomSuccessHandler` para redirecionar por papel do usuário
 - `SecurityConfig` com CORS configurável via propriedade `app.cors.allowed-origins`
