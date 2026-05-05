@@ -148,7 +148,7 @@ Execute o script `create_database.sql` para criar as tabelas e carregar os dados
 
 **Windows:**
 ```bash
-.\mvnw.cmd spring-boot:run -Dspring-boot.run.profiles=dev
+.\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=dev"
 ```
 
 **Linux / macOS:**
