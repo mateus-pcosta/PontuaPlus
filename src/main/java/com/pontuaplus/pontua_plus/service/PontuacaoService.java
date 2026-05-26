@@ -1,11 +1,17 @@
 package com.pontuaplus.pontua_plus.service;
 
+import com.pontuaplus.pontua_plus.dto.RankingDTO;
+import com.pontuaplus.pontua_plus.dto.RankingDTO.AlunoRankingDTO;
+import com.pontuaplus.pontua_plus.dto.RankingDTO.TierDTO;
 import com.pontuaplus.pontua_plus.entity.*;
+import com.pontuaplus.pontua_plus.enums.Ranking;
+import com.pontuaplus.pontua_plus.exception.ResourceNotFoundException;
 import com.pontuaplus.pontua_plus.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,6 +47,7 @@ public class PontuacaoService {
     private final NotaRepository notaRepository;
     private final FrequenciaRepository frequenciaRepository;
     private final AtividadeExtraRepository atividadeExtraRepository;
+    private final AlunoRepository alunoRepository;
 
     @Transactional(readOnly = true)
     public Optional<Pontuacao> buscarPorAluno(Aluno aluno) {
@@ -90,8 +97,8 @@ public class PontuacaoService {
         List<Pontuacao> pontuacoes = pontuacaoRepository.findAllOrderByTotalPontosDesc();
         for (int i = 0; i < pontuacoes.size(); i++) {
             pontuacoes.get(i).setPosicaoRanking(i + 1);
-            pontuacaoRepository.save(pontuacoes.get(i));
         }
+        pontuacaoRepository.saveAll(pontuacoes);
     }
 
     public Optional<Pontuacao> obterPontuacaoPorAluno(Long alunoId) {
@@ -100,6 +107,54 @@ public class PontuacaoService {
 
     public List<Pontuacao> obterRanking() {
         return pontuacaoRepository.findAllOrderByTotalPontosDesc();
+    }
+
+    @Transactional(readOnly = true)
+    public RankingDTO montarRanking(String emailAluno) {
+        Aluno aluno = alunoRepository.findByEmail(emailAluno)
+                .orElseThrow(() -> new ResourceNotFoundException("Aluno não encontrado"));
+        Pontuacao minhaPontuacao = pontuacaoRepository.findByAluno(aluno)
+                .orElseThrow(() -> new ResourceNotFoundException("Pontuação não encontrada"));
+
+        Ranking meuTier = minhaPontuacao.getRanking();
+        if (meuTier == null) {
+            throw new ResourceNotFoundException("Pontuação do aluno ainda não foi calculada");
+        }
+        List<Ranking> acessiveis = tiersAcessiveis(meuTier);
+        long totalAlunos = pontuacaoRepository.count();
+
+        List<TierDTO> tiers = Arrays.stream(Ranking.values())
+                .sorted((a, b) -> b.getPontoMinimo() - a.getPontoMinimo())
+                .map(tier -> {
+                    long qtd = pontuacaoRepository.countByRanking(tier);
+                    int percentual = totalAlunos > 0 ? (int) Math.round(qtd * 100.0 / totalAlunos) : 0;
+                    boolean acessivel = acessiveis.contains(tier);
+                    String faixa = tier.getPontoMinimo() + "-" + tier.getPontoMaximo() + " pontos";
+
+                    List<AlunoRankingDTO> alunosDTO = acessivel
+                            ? pontuacaoRepository.findByRankingOrderByTotalPontosDesc(tier).stream()
+                                    .map(p -> new AlunoRankingDTO(
+                                            p.getAluno().getNome(),
+                                            p.getTotalPontos(),
+                                            p.getPosicaoRanking(),
+                                            p.getAluno().getId().equals(aluno.getId())))
+                                    .toList()
+                            : List.of();
+
+                    return new TierDTO(tier.name(), faixa, (int) qtd, percentual, acessivel, alunosDTO);
+                })
+                .toList();
+
+        return new RankingDTO(meuTier.name(), minhaPontuacao.getPosicaoRanking(), tiers);
+    }
+
+    private List<Ranking> tiersAcessiveis(Ranking meuTier) {
+        return switch (meuTier) {
+            case DIAMOND -> List.of(Ranking.DIAMOND);
+            case OURO    -> List.of(Ranking.DIAMOND, Ranking.OURO);
+            case PRATA   -> List.of(Ranking.DIAMOND, Ranking.OURO, Ranking.PRATA);
+            case BRONZE  -> List.of(Ranking.DIAMOND, Ranking.OURO, Ranking.PRATA, Ranking.BRONZE);
+        };
     }
 
     private int calcularPontosPorMedia(double media) {
