@@ -34,7 +34,11 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         if (alunoRepository.findByEmail("mateus@pontua.com").isPresent()) {
-            log.info("Dados de teste já inicializados, pulando.");
+            log.info("Dados de teste já inicializados, atualizando senha...");
+            alunoRepository.findByEmail("mateus@pontua.com").ifPresent(a -> {
+                a.setSenha(passwordEncoder.encode("123456"));
+                alunoRepository.save(a);
+            });
             return;
         }
 

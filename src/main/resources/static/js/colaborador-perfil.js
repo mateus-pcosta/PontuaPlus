@@ -20,8 +20,8 @@ async function carregarPerfil() {
             throw new Error('Erro ao carregar perfil');
         }
 
-        const colaborador = await response.json();
-        renderizarPerfil(colaborador);
+        const data = await response.json();
+        renderizarPerfil(data);
     } catch (error) {
         alert('Erro ao carregar dados do perfil');
     }
@@ -29,27 +29,27 @@ async function carregarPerfil() {
 
 
 // Renderizar dados do perfil
-function renderizarPerfil(aluno) {
+function renderizarPerfil(colaborador) {
     // Ocultar loading e mostrar conteúdo
     document.getElementById('loading').style.display = 'none';
     document.getElementById('perfilContent').style.display = 'block';
 
     // Atualizar nome do usuário no header
-    document.getElementById('userName').textContent = aluno.nome;
-    const iniciais = aluno.nome.split(' ').map(n => n[0]).slice(0, 2).join('');
+    document.getElementById('userName').textContent = colaborador.nome;
+    const iniciais = colaborador.nome.split(' ').map(n => n[0]).slice(0, 2).join('');
     document.getElementById('userAvatar').textContent = iniciais;
 
     // Informações Pessoais
-    document.getElementById('nomeCompleto').textContent = aluno.nome;
-    document.getElementById('email').textContent = aluno.email;
-    document.getElementById('dataNascimento').textContent = formatarData(aluno.dataNascimento);
+    document.getElementById('nomeCompleto').textContent = colaborador.nome;
+    document.getElementById('email').textContent = colaborador.email;
+    document.getElementById('dataNascimento').textContent = formatarData(colaborador.dataNascimento);
 
     // Informações Acadêmicas
-    document.getElementById('matricula').textContent = aluno.matricula;
+    document.getElementById('matricula').textContent = colaborador.matricula;
 
-    document.getElementById('colegio').textContent = aluno.colegio;
+    document.getElementById('colegio').textContent = colaborador.colegio;
 
-    document.getElementById('dataIngresso').textContent = formatarData(aluno.dataIngresso);
+    document.getElementById('dataIngresso').textContent = formatarData(colaborador.dataIngresso);
 }
 
 // Formatar data

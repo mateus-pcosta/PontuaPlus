@@ -95,14 +95,11 @@
     <script>
         // Verificar se há erro de login na URL
         const urlParams = new URLSearchParams(window.location.search);
-        const error = urlParams.get('error');
-        const logout = urlParams.get('logout');
-
-        if (error) {
+        if (urlParams.has('error')) {
             showAlert('E-mail ou senha incorretos. Tente novamente.', 'error');
         }
 
-        if (logout) {
+        if (urlParams.has('logout')) {
             showAlert('Você saiu com sucesso!', 'success');
         }
 
