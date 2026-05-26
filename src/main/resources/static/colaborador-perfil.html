@@ -9,12 +9,16 @@
 <body>
     <div class="header">
         <img src="/img/logopreto.png" alt="Pontua+" class="header-logo">
+        <nav class="nav-menu">
+            <a href="/professor-dashboard.html" class="nav-link">Desempenho</a>
+            <span class="nav-link disabled">Ranking</span>
+            <span class="nav-link disabled">Recompensas</span>
+            <span class="nav-link disabled">Eventos</span>
+            <span class="nav-link disabled">Acessibilidade</span>
+        </nav>
         <div class="user-info">
-            <button class="btn btn-secondary" onclick="window.location.href='/professor-dashboard.html'" style="margin-right: 12px;">
-                Voltar
-            </button>
             <span id="userName">Carregando...</span>
-            <div class="user-avatar" id="userAvatar">
+            <div class="user-avatar active" id="userAvatar">
                 M
             </div>
         </div>

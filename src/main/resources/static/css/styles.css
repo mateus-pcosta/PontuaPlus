@@ -1603,6 +1603,243 @@ tr:last-child td {
     }
 }
 
+/* ==================== NAVEGAÇÃO GLOBAL ==================== */
+
+.nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.nav-link {
+    padding: 8px 16px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--cinza-escuro);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.nav-link:hover:not(.disabled):not(.active) {
+    background: var(--cinza-claro);
+    color: var(--texto-escuro);
+}
+
+.nav-link.active {
+    background: var(--gradient-primary);
+    color: var(--branco);
+}
+
+.nav-link.disabled {
+    color: var(--cinza-medio);
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* ==================== RANKING — TIER CARDS ==================== */
+
+.ranking-page-title {
+    margin-bottom: 8px;
+}
+
+.ranking-page-subtitle {
+    color: var(--cinza-escuro);
+    font-size: 15px;
+    margin-bottom: 28px;
+}
+
+.tier-section {
+    background: var(--branco);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 2px 12px var(--sombra);
+    margin-bottom: 16px;
+    overflow: hidden;
+    border: 1px solid var(--cinza-medio);
+}
+
+.tier-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    cursor: pointer;
+    user-select: none;
+    transition: filter var(--transition-fast);
+}
+
+.tier-header.blocked {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.tier-diamond .tier-header { background: #06b6d4; color: #fff; }
+.tier-ouro    .tier-header { background: #eab308; color: #fff; }
+.tier-prata   .tier-header { background: #9ca3af; color: #fff; }
+.tier-bronze  .tier-header { background: #c8a882; color: #fff; }
+
+.tier-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.tier-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.12);
+    border-radius: 50%;
+}
+
+.tier-info { color: var(--texto-escuro); }
+
+.tier-name {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.tier-range {
+    font-size: 13px;
+    opacity: 0.8;
+    margin-top: 2px;
+}
+
+.tier-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    color: var(--texto-escuro);
+}
+
+.tier-alunos {
+    font-size: 13px;
+    opacity: 0.75;
+}
+
+.tier-chevron {
+    transition: transform var(--transition-fast);
+    margin-top: 4px;
+}
+
+.tier-percent {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.tier-percent-label {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.tier-badge {
+    display: inline-block;
+    background: var(--branco);
+    color: var(--texto-escuro);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    margin-top: 6px;
+}
+
+.tier-lock-icon {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0,0,0,0.15);
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    color: var(--texto-escuro);
+    margin-top: 6px;
+}
+
+.tier-body {
+    display: none;
+    padding: 0 24px 16px;
+}
+
+.tier-body.open {
+    display: block;
+}
+
+.ranking-list {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0 0;
+}
+
+.ranking-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--cinza-claro);
+}
+
+.ranking-item:last-child {
+    border-bottom: none;
+}
+
+.ranking-item.eu-mesmo {
+    background: rgba(37, 99, 235, 0.05);
+    margin: 0 -24px;
+    padding: 12px 24px;
+    border-radius: var(--radius-sm);
+}
+
+.ranking-position {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--cinza-escuro);
+    min-width: 32px;
+    text-align: center;
+}
+
+.ranking-position.top3 {
+    color: var(--azul-royal);
+}
+
+.ranking-nome {
+    flex: 1;
+    font-weight: 500;
+    color: var(--texto-escuro);
+}
+
+.ranking-nome .eu-label {
+    font-size: 11px;
+    background: var(--gradient-primary);
+    color: var(--branco);
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    margin-left: 8px;
+    font-weight: 600;
+}
+
+.ranking-pontos {
+    font-weight: 700;
+    color: var(--azul-royal);
+    font-size: 15px;
+}
+
+@media (max-width: 768px) {
+    .nav-menu {
+        gap: 2px;
+    }
+    .nav-link {
+        padding: 6px 10px;
+        font-size: 13px;
+    }
+    .tier-name { font-size: 16px; }
+    .tier-percent { font-size: 17px; }
+}
+
 /* ==================== UTILITÁRIOS ==================== */
 
 .text-gradient {
