@@ -30,6 +30,7 @@ async function carregarDashboard() {
         const data = await response.json();
         renderizarDashboard(data);
     } catch (error) {
+        console.error('Erro no dashboard:', error);
         alert('Erro ao carregar dados do dashboard');
     }
 }
@@ -41,7 +42,6 @@ function renderizarDashboard(data) {
     document.getElementById('dashboardContent').style.display = 'block';
 
     // Atualizar nome do usuário
-    document.getElementById('userName').textContent = data.aluno.nome;
     const iniciais = data.aluno.nome.split(' ').map(n => n[0]).slice(0, 2).join('');
     document.getElementById('userAvatar').textContent = iniciais;
 
@@ -107,25 +107,28 @@ function renderizarGraficoNotas(notas) {
     });
 
     // Calcular médias por bimestre
-    // Bimestre 1: Jan-Fev, Bimestre 2: Jun-Jul
     const meses = [];
     const medias = [];
 
-    // Para cada bimestre que temos notas, distribuir nos meses correspondentes
-    Object.keys(notasPorBimestre).forEach(bimestre => {
-        const valores = notasPorBimestre[bimestre];
-        const media = valores.reduce((a, b) => a + b, 0) / valores.length;
+    const bimestreMeses = {
+        1: ['Jan', 'Fev'],
+        2: ['Jun', 'Jul'],
+        3: ['Ago', 'Set'],
+        4: ['Out', 'Nov', 'Dez'],
+    };
 
-        // Bimestre 1: Janeiro e Fevereiro
-        // Bimestre 2: Junho e Julho
-        if (bimestre == 1) {
-            meses.push('Jan', 'Fev');
-            medias.push(media.toFixed(1), media.toFixed(1));
-        } else if (bimestre == 2) {
-            meses.push('Jun', 'Jul');
-            medias.push(media.toFixed(1), media.toFixed(1));
-        }
-    });
+    Object.keys(notasPorBimestre)
+        .sort((a, b) => Number(a) - Number(b))
+        .forEach(bimestre => {
+            const valores = notasPorBimestre[bimestre];
+            const media = valores.reduce((a, b) => a + b, 0) / valores.length;
+            const nomesMeses = bimestreMeses[bimestre];
+            if (!nomesMeses) return;
+            nomesMeses.forEach(m => {
+                meses.push(m);
+                medias.push(media.toFixed(1));
+            });
+        });
 
     // Destruir gráfico anterior se existir
     if (notasChart) {
@@ -219,11 +222,13 @@ function renderizarGraficoFrequencia(frequencias) {
     const presencas = [];
     const faltas = [];
 
-    frequencias.forEach(freq => {
-        meses.push(mesesNomes[freq.mes - 1].substring(0, 3));
-        presencas.push(freq.presencas);
-        faltas.push(freq.faltas);
-    });
+    [...frequencias]
+        .sort((a, b) => (a.ano * 12 + a.mes) - (b.ano * 12 + b.mes))
+        .forEach(freq => {
+            meses.push(mesesNomes[freq.mes - 1].substring(0, 3));
+            presencas.push(freq.presencas);
+            faltas.push(freq.faltas);
+        });
 
     // Destruir gráfico anterior se existir
     if (frequenciaChart) {
@@ -391,7 +396,7 @@ function formatarRanking(ranking) {
         'BRONZE': 'Bronze',
         'PRATA': 'Prata',
         'OURO': 'Ouro',
-        'DIAMOND': 'Diamond'
+        'DIAMOND': 'Diamante'
     };
     return rankingMap[ranking] || ranking;
 }
