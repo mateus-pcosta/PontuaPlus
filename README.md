@@ -71,7 +71,7 @@ A pontuação de cada aluno é calculada com base em **3 pilares**, totalizando 
 | 🥉 Bronze       | 0 – 25          | Iniciante    |
 | 🥈 Prata        | 26 – 64         | Intermediário |
 | 🥇 Ouro         | 65 – 80         | Avançado     |
-| 💎 Diamond      | 81 – 100        | Elite        |
+| 💎 Diamante      | 81 – 100        | Elite        |
 
 ---
 
