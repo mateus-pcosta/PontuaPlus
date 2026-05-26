@@ -79,7 +79,7 @@ A pontuação de cada aluno é calculada com base em **3 pilares**, totalizando 
 
 | Camada       | Tecnologia                        |
 |--------------|-----------------------------------|
-| Backend      | Java 17 + Spring Boot 3.5.6       |
+| Backend      | Java 21 + Spring Boot 3.5.6       |
 | Segurança    | Spring Security                   |
 | Persistência | Spring Data JPA + Hibernate       |
 | Banco de Dados | MySQL 8.0+                      |
@@ -92,7 +92,7 @@ A pontuação de cada aluno é calculada com base em **3 pilares**, totalizando 
 ## Pré-requisitos
 
 **Sem Docker:**
-- [Java 17+](https://adoptium.net/)
+- [Java 21+](https://adoptium.net/)
 - [MySQL 8.0+](https://dev.mysql.com/downloads/)
 - Maven (ou use o `mvnw` incluso no projeto)
 
@@ -146,7 +146,12 @@ CREATE DATABASE pontua_db;
 
 Execute o script `create_database.sql` para criar as tabelas e carregar os dados de exemplo. Em seguida, inicie a aplicação com o perfil `dev`:
 
-**Windows:**
+**Windows** (usando o script incluso, que carrega o `.env` automaticamente):
+```powershell
+.\run.ps1
+```
+
+Ou manualmente:
 ```bash
 .\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=dev"
 ```
@@ -164,7 +169,7 @@ Abra no navegador: [http://localhost:8080](http://localhost:8080)
 - E-mail: `mateus@pontua.com`
 - Senha: `123456`
 
-> Os dados de exemplo (aluno Mateus Pessoa Costa com notas, frequências e atividades do 2º bimestre) são carregados automaticamente pelo `DataInitializer` quando o perfil `dev` está ativo.
+> O banco de dados de exemplo contém 17 alunos (incluindo Mateus Pessoa Costa) com notas e frequências dos bimestres 3 e 4 (agosto–dezembro) e atividades extracurriculares do 3º bimestre. Execute `create_database.sql` no MySQL antes de iniciar — o `DataInitializer` garante que a senha do usuário de teste esteja sincronizada a cada reinício.
 
 ---
 
@@ -175,7 +180,7 @@ src/
 └── main/
     ├── java/com/pontuaplus/pontua_plus/
     │   ├── config/         # Configurações de segurança, CORS e dados iniciais (dev)
-    │   ├── controller/     # Endpoints REST (Auth, Dashboard, Registro)
+    │   ├── controller/     # Endpoints REST (Auth, Dashboard, Registro, Ranking)
     │   ├── dto/            # Objetos de transferência de dados
     │   ├── entity/         # Entidades JPA (Aluno, Nota, Frequencia, etc.)
     │   ├── enums/          # Enumerações (Ranking, TipoAtividade, TipoUsuario)
@@ -193,11 +198,12 @@ src/
 
 ## Endpoints da API
 
-| Método | Endpoint         | Descrição                          | Autenticação |
-|--------|------------------|------------------------------------|--------------|
-| POST   | `/auth/login`    | Autenticar aluno                   | Não          |
-| POST   | `/registro`      | Cadastrar novo aluno               | Não          |
-| GET    | `/dashboard`     | Dados do aluno autenticado         | Sim          |
+| Método | Endpoint         | Descrição                                           | Autenticação |
+|--------|------------------|-----------------------------------------------------|--------------|
+| POST   | `/api/auth/login`   | Autenticar aluno                                 | Não          |
+| POST   | `/api/registro`     | Cadastrar novo aluno                             | Não          |
+| GET    | `/api/dashboard`    | Dados do aluno autenticado                       | Sim          |
+| GET    | `/api/ranking`      | Ranking com tiers acessíveis conforme nível      | Sim          |
 
 ---
 
