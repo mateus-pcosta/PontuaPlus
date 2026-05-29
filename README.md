@@ -138,13 +138,19 @@ docker-compose up --build
 
 ### 3b. Executar localmente (sem Docker)
 
-Crie o banco manualmente no MySQL:
+Execute o script `create_database.sql` no MySQL para criar o banco, as tabelas e carregar os dados de exemplo:
 
-```sql
-CREATE DATABASE pontua_db;
+```powershell
+# Windows (PowerShell)
+cmd /c "mysql -u root -p --default-character-set=utf8mb4 < create_database.sql"
 ```
 
-Execute o script `create_database.sql` para criar as tabelas e carregar os dados de exemplo. Em seguida, inicie a aplicação com o perfil `dev`:
+```bash
+# Linux / macOS
+mysql -u root -p --default-character-set=utf8mb4 < create_database.sql
+```
+
+Em seguida, inicie a aplicação com o perfil `dev`:
 
 **Windows** (usando o script incluso, que carrega o `.env` automaticamente):
 ```powershell
@@ -209,8 +215,8 @@ src/
 
 ## Documentação Adicional
 
-- [Guia Rápido de Execução](GUIA_RAPIDO.md)
-- [Sistema de Pontuação Detalhado](NOVO_SISTEMA_PONTUACAO.md)
+- [Arquitetura do Sistema](docs/ARQUITETURA.md)
+- [Diagrama ER](docs/DIAGRAMA_ER.md)
 - [Fluxo MVC — como uma requisição percorre a aplicação](docs/FLUXO_MVC.md)
 - [Changelog](CHANGELOG.md)
 
