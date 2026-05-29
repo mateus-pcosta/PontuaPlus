@@ -90,6 +90,7 @@ Controllers **não contêm regras de negócio** — apenas orquestram a chamada 
 |---|---|---|
 | `AuthController` | `GET /api/auth/me` | Retorna dados do aluno logado |
 | `DashboardController` | `GET /api/dashboard` | Dados consolidados do dashboard |
+| `RankingController` | `GET /api/ranking` | Ranking com tiers acessíveis por nível do aluno |
 | `RegistroController` | `POST /api/registro` | Cadastro de aluno |
 | `RegistroColaboradorController` | `POST /api/registro/colaborador` | Cadastro de colaborador |
 | `ColaboradorAuthController` | `GET /api/colaborador/me` | Dados do colaborador logado |
@@ -136,8 +137,8 @@ public class PontuacaoService {
 |---|---|
 | `AlunoService` | CRUD de alunos, validação de duplicatas, cálculo do bimestre atual |
 | `ColaboradorService` | CRUD de colaboradores, validação de duplicatas |
-| `PontuacaoService` | Cálculo de pontos por bimestre e atualização do ranking |
-| `DashboardService` | Montagem do DTO do dashboard (leitura, sem escrita) |
+| `PontuacaoService` | Cálculo de pontos por bimestre, atualização do ranking e montagem do RankingDTO com controle de acesso por tier |
+| `DashboardService` | Montagem do DTO do dashboard — retorna todo o histórico de notas e frequências para os gráficos, filtrando atividades extras pelo bimestre atual |
 | `CustomUserDetailsService` | Carrega usuário para o Spring Security |
 
 A anotação `@Transactional` garante que todas as operações de um método sejam confirmadas juntas ou desfeitas em caso de erro.
@@ -164,6 +165,9 @@ public interface PontuacaoRepository extends JpaRepository<Pontuacao, Long> {
 
     @Query("SELECT p FROM Pontuacao p ORDER BY p.totalPontos DESC")
     List<Pontuacao> findAllOrderByTotalPontosDesc();
+
+    List<Pontuacao> findByRankingOrderByTotalPontosDesc(Ranking ranking);
+    long countByRanking(Ranking ranking);
 }
 ```
 
@@ -264,8 +268,8 @@ html += `<div class="materia-nome">${escapeHtml(disciplina)}</div>`;
 5. DashboardService.montarDashboard(email) assume o controle
 6. AlunoRepository executa SELECT na tabela alunos (busca por e-mail)
 7. PontuacaoRepository busca a pontuação existente do aluno (sem recalcular)
-8. NotaRepository, FrequenciaRepository e AtividadeExtraRepository buscam
-   os registros do bimestre atual com queries filtradas no banco
+8. NotaRepository e FrequenciaRepository retornam todo o histórico do aluno
+   (sem filtro de bimestre); AtividadeExtraRepository filtra pelo bimestre atual
 9. DashboardService monta e retorna o DashboardDTO
 10. DashboardController devolve ResponseEntity<DashboardDTO> com HTTP 200
 11. dashboard.js recebe o JSON e atualiza a tela via escapeHtml()

@@ -10,24 +10,29 @@ flowchart TD
         A2[login.html]
         A3[dashboard.html]
         A4[perfil.html]
-        A5[registro.html]
-        A6[dashboard.js / perfil.js / registro.js]
-        A7[styles.css]
+        A5[ranking.html]
+        A6[registro.html]
+        A7[dashboard.js / ranking.js / perfil.js / registro.js]
+        A8[styles.css]
     end
 
     subgraph Backend["Backend (Spring Boot)"]
         direction TB
 
         subgraph Controllers["Controller Layer"]
-            C1[AuthController\n/auth/login]
-            C2[DashboardController\n/dashboard]
-            C3[RegistroController\n/registro]
+            C1[AuthController\n/api/auth]
+            C2[DashboardController\n/api/dashboard]
+            C3[RankingController\n/api/ranking]
+            C4[RegistroController\n/api/registro]
+            C5[ColaboradorAuthController\n/api/colaborador]
         end
 
         subgraph Services["Service Layer"]
             S1[AlunoService]
             S2[PontuacaoService]
-            S3[CustomUserDetailsService]
+            S3[DashboardService]
+            S4[ColaboradorService]
+            S5[CustomUserDetailsService]
         end
 
         subgraph Repositories["Repository Layer (Spring Data JPA)"]
@@ -100,13 +105,17 @@ com.pontuaplus.pontua_plus/
 │   └── DataInitializer.java      → Carga inicial de dados de teste
 │
 ├── controller/
-│   ├── AuthController.java       → POST /auth/login
-│   ├── DashboardController.java  → GET /dashboard
-│   └── RegistroController.java   → POST /registro
+│   ├── AuthController.java                → POST /api/auth/login
+│   ├── DashboardController.java           → GET /api/dashboard
+│   ├── RankingController.java             → GET /api/ranking
+│   ├── RegistroController.java            → POST /api/registro
+│   ├── RegistroColaboradorController.java → POST /api/registro/colaborador
+│   └── ColaboradorAuthController.java     → GET /api/colaborador/me
 │
 ├── dto/
 │   ├── AlunoDTO.java
 │   ├── DashboardDTO.java
+│   ├── RankingDTO.java
 │   └── RegistroAlunoDTO.java
 │
 ├── entity/
@@ -132,6 +141,8 @@ com.pontuaplus.pontua_plus/
 │
 └── service/
     ├── AlunoService.java
+    ├── ColaboradorService.java
+    ├── DashboardService.java
     ├── PontuacaoService.java
     └── CustomUserDetailsService.java
 ```
@@ -142,7 +153,7 @@ com.pontuaplus.pontua_plus/
 
 | Camada          | Tecnologia                      | Versão     |
 |-----------------|---------------------------------|------------|
-| Linguagem       | Java                            | 17         |
+| Linguagem       | Java                            | 21         |
 | Framework       | Spring Boot                     | 3.5.6      |
 | Segurança       | Spring Security                 | —          |
 | ORM             | Spring Data JPA + Hibernate     | —          |
