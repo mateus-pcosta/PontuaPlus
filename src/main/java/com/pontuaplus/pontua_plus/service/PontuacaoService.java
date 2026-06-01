@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -48,6 +50,7 @@ public class PontuacaoService {
     private final FrequenciaRepository frequenciaRepository;
     private final AtividadeExtraRepository atividadeExtraRepository;
     private final AlunoRepository alunoRepository;
+    private final EmblemaDigitalRepository emblemaDigitalRepository;
 
     @Transactional(readOnly = true)
     public Optional<Pontuacao> buscarPorAluno(Aluno aluno) {
@@ -89,7 +92,31 @@ public class PontuacaoService {
 
         Pontuacao salva = pontuacaoRepository.save(pontuacao);
         atualizarRankings();
+        criarEmblemaSeNecessario(aluno, salva, bimestre);
         return salva;
+    }
+
+    private void criarEmblemaSeNecessario(Aluno aluno, Pontuacao pontuacao, int bimestre) {
+        int ano = LocalDate.now().getYear();
+        if (!emblemaDigitalRepository.existsByAlunoAndBimestreAndAno(aluno, bimestre, ano)) {
+            EmblemaDigital emblema = new EmblemaDigital();
+            emblema.setAluno(aluno);
+            emblema.setRanking(pontuacao.getRanking());
+            emblema.setBimestre(bimestre);
+            emblema.setAno(ano);
+            emblema.setTitulo("Emblema " + formatarNomeTier(pontuacao.getRanking()) + " " + ano + "/" + bimestre);
+            emblema.setConquistadoEm(LocalDateTime.now());
+            emblemaDigitalRepository.save(emblema);
+        }
+    }
+
+    private String formatarNomeTier(Ranking ranking) {
+        return switch (ranking) {
+            case BRONZE  -> "Bronze";
+            case PRATA   -> "Prata";
+            case OURO    -> "Ouro";
+            case DIAMOND -> "Diamante";
+        };
     }
 
     @Transactional

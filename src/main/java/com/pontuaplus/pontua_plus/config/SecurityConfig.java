@@ -57,8 +57,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/index.html", "/login.html", "/registro.html", "/perfil.html",
-                                "/dashboard.html", "/ranking.html", "/favicon.ico", "/img/**",
-                                "/css/**", "/js/**", "/assets/**", "/api/auth/**", "/api/registro/**").permitAll()
+                                "/dashboard.html", "/ranking.html", "/recompensas.html", "/favicon.ico",
+                                "/img/**", "/css/**", "/js/**", "/assets/**", "/api/auth/**", "/api/registro/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
