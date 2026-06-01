@@ -98,6 +98,32 @@ CREATE TABLE pontuacoes (
     INDEX idx_total_pontos (total_pontos DESC)
 );
 
+-- 9. Tabela de recompensas (catálogo)
+CREATE TABLE recompensas (
+    id             BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nome           VARCHAR(255) NOT NULL,
+    descricao      VARCHAR(500),
+    parceiro       VARCHAR(255),
+    ranking_minimo VARCHAR(50)  NOT NULL,
+    icone          VARCHAR(100),
+    ativo          BOOLEAN      NOT NULL DEFAULT TRUE
+);
+
+-- 10. Tabela de emblemas digitais
+CREATE TABLE emblemas_digitais (
+    id             BIGINT AUTO_INCREMENT PRIMARY KEY,
+    aluno_id       BIGINT       NOT NULL,
+    titulo         VARCHAR(255) NOT NULL,
+    ranking        VARCHAR(50)  NOT NULL,
+    bimestre       INT          NOT NULL,
+    ano            INT          NOT NULL,
+    conquistado_em DATETIME,
+    FOREIGN KEY (aluno_id) REFERENCES alunos(id) ON DELETE CASCADE,
+    UNIQUE KEY uk_emblema (aluno_id, bimestre, ano),
+    INDEX idx_aluno_emblema (aluno_id)
+);
+
+
 -- =============================================================
 -- Usuário inicial — Login: mateus@pontua.com | Senha: 123456
 -- =============================================================
@@ -470,3 +496,42 @@ UPDATE pontuacoes SET posicao_ranking = 14 WHERE aluno_id = 14;
 UPDATE pontuacoes SET posicao_ranking = 15 WHERE aluno_id = 17;
 UPDATE pontuacoes SET posicao_ranking = 16 WHERE aluno_id = 15;
 UPDATE pontuacoes SET posicao_ranking = 17 WHERE aluno_id = 16;
+
+-- =============================================================
+-- Recompensas — catálogo fictício por tier
+-- =============================================================
+INSERT INTO recompensas (nome, descricao, parceiro, ranking_minimo, icone, ativo) VALUES
+-- DIAMOND
+('Setup Gamer Premium',       'Teclado mecânico + mouse gamer de alta qualidade',    'TechStore PI',          'DIAMOND', 'gamepad',   TRUE),
+('Bolsa de Estudos R$500',    'Crédito de R$500 para investir em cursos ou material', 'Instituto Educação PI', 'DIAMOND', 'graduation', TRUE),
+('Acesso Cursos Premium',     '3 meses de acesso gratuito a cursos online premium',  'LearnTech',             'DIAMOND', 'monitor',   TRUE),
+-- OURO
+('Vale-Livro R$50',           'R$50 em livros de sua escolha na livraria parceira',  'Livraria Teresina',     'OURO',    'book',      TRUE),
+('Ingresso Cinema Duplo',     '2 ingressos para qualquer sessão',                    'Cine Timon',            'OURO',    'film',      TRUE),
+('Kit Material Escolar Plus', 'Kit premium com cadernos, canetas e acessórios',      'Papelaria Central PI',  'OURO',    'pencil',    TRUE),
+-- PRATA
+('Desconto Material Escolar', '15% de desconto em qualquer compra na loja parceira', 'Papelaria Central PI',  'PRATA',   'tag',       TRUE),
+('Ingresso Cinema',           '1 ingresso para qualquer sessão',                     'Cine Timon',            'PRATA',   'film',      TRUE),
+('Lanche Especial',           'Um lanche especial da cantina escolar',               'Cantina Escolar',       'PRATA',   'coffee',    TRUE);
+
+-- =============================================================
+-- Emblemas digitais — 1 por aluno, bimestre 3 de 2024
+-- =============================================================
+INSERT INTO emblemas_digitais (aluno_id, titulo, ranking, bimestre, ano, conquistado_em) VALUES
+(1,  'Emblema Ouro 2024/3',     'OURO',    3, 2024, NOW()),
+(2,  'Emblema Diamante 2024/3', 'DIAMOND', 3, 2024, NOW()),
+(3,  'Emblema Diamante 2024/3', 'DIAMOND', 3, 2024, NOW()),
+(4,  'Emblema Diamante 2024/3', 'DIAMOND', 3, 2024, NOW()),
+(5,  'Emblema Ouro 2024/3',     'OURO',    3, 2024, NOW()),
+(6,  'Emblema Ouro 2024/3',     'OURO',    3, 2024, NOW()),
+(7,  'Emblema Ouro 2024/3',     'OURO',    3, 2024, NOW()),
+(8,  'Emblema Ouro 2024/3',     'OURO',    3, 2024, NOW()),
+(9,  'Emblema Ouro 2024/3',     'OURO',    3, 2024, NOW()),
+(10, 'Emblema Prata 2024/3',    'PRATA',   3, 2024, NOW()),
+(11, 'Emblema Prata 2024/3',    'PRATA',   3, 2024, NOW()),
+(12, 'Emblema Prata 2024/3',    'PRATA',   3, 2024, NOW()),
+(13, 'Emblema Prata 2024/3',    'PRATA',   3, 2024, NOW()),
+(14, 'Emblema Bronze 2024/3',   'BRONZE',  3, 2024, NOW()),
+(15, 'Emblema Bronze 2024/3',   'BRONZE',  3, 2024, NOW()),
+(16, 'Emblema Bronze 2024/3',   'BRONZE',  3, 2024, NOW()),
+(17, 'Emblema Bronze 2024/3',   'BRONZE',  3, 2024, NOW());
