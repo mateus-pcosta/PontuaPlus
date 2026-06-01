@@ -63,5 +63,52 @@ function logout() {
     }
 }
 
+async function carregarEmblemas() {
+    try {
+        const response = await fetch('/api/recompensas/emblemas');
+        if (!response.ok) return;
+        const emblemas = await response.json();
+        renderizarEmblemas(emblemas);
+    } catch (_) {}
+}
+
+function renderizarEmblemas(emblemas) {
+    const grid = document.getElementById('emblemasGrid');
+    if (!emblemas || emblemas.length === 0) {
+        grid.innerHTML = '<p style="color: var(--cinza-escuro); font-size: 14px;">Nenhum emblema conquistado ainda.</p>';
+        return;
+    }
+
+    const tierCores = {
+        DIAMOND: { bg: 'var(--diamante-light)', cor: 'var(--diamante)',    label: 'Diamante' },
+        OURO:    { bg: '#fef9c3',               cor: 'var(--ouro)',         label: 'Ouro'     },
+        PRATA:   { bg: '#f1f5f9',               cor: 'var(--prata)',        label: 'Prata'    },
+        BRONZE:  { bg: '#fef3c7',               cor: 'var(--bronze)',       label: 'Bronze'   },
+    };
+
+    grid.innerHTML = emblemas.map(e => {
+        const cfg = tierCores[e.ranking] ?? { bg: '#f5f5f5', cor: '#666', label: e.ranking };
+        return `
+            <div class="emblema-item" style="background: ${cfg.bg}; border-color: ${cfg.cor};">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="${cfg.cor}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:8px;">
+                    <circle cx="12" cy="8" r="6"/>
+                    <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
+                </svg>
+                <div class="emblema-titulo">${escapeHtmlPerfil(e.titulo)}</div>
+                <div class="emblema-bimestre">${e.bimestre}º bimestre / ${e.ano}</div>
+            </div>
+        `;
+    }).join('');
+}
+
+function escapeHtmlPerfil(value) {
+    const div = document.createElement('div');
+    div.textContent = String(value ?? '');
+    return div.innerHTML;
+}
+
 // Carregar perfil ao carregar a página
-window.addEventListener('DOMContentLoaded', carregarPerfil);
+window.addEventListener('DOMContentLoaded', () => {
+    carregarPerfil();
+    carregarEmblemas();
+});
