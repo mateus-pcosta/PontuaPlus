@@ -11,8 +11,9 @@ flowchart TD
         A3[dashboard.html]
         A4[perfil.html]
         A5[ranking.html]
-        A6[registro.html]
-        A7[dashboard.js / ranking.js / perfil.js / registro.js]
+        A6[recompensas.html]
+        A7[registro.html]
+        A8[dashboard.js / ranking.js / recompensas.js / perfil.js / registro.js]
         A8[styles.css]
     end
 
@@ -23,16 +24,18 @@ flowchart TD
             C1[AuthController\n/api/auth]
             C2[DashboardController\n/api/dashboard]
             C3[RankingController\n/api/ranking]
-            C4[RegistroController\n/api/registro]
-            C5[ColaboradorAuthController\n/api/colaborador]
+            C4[RecompensaController\n/api/recompensas]
+            C5[RegistroController\n/api/registro]
+            C6[ColaboradorAuthController\n/api/colaborador]
         end
 
         subgraph Services["Service Layer"]
             S1[AlunoService]
             S2[PontuacaoService]
             S3[DashboardService]
-            S4[ColaboradorService]
-            S5[CustomUserDetailsService]
+            S4[RecompensaService]
+            S5[ColaboradorService]
+            S6[CustomUserDetailsService]
         end
 
         subgraph Repositories["Repository Layer (Spring Data JPA)"]
@@ -42,6 +45,8 @@ flowchart TD
             R4[AtividadeExtraRepository]
             R5[PontuacaoRepository]
             R6[UsuarioRepository]
+            R7[RecompensaRepository]
+            R8[EmblemaDigitalRepository]
         end
 
         subgraph Config["Config"]
@@ -108,6 +113,7 @@ com.pontuaplus.pontua_plus/
 │   ├── AuthController.java                → POST /api/auth/login
 │   ├── DashboardController.java           → GET /api/dashboard
 │   ├── RankingController.java             → GET /api/ranking
+│   ├── RecompensaController.java          → GET /api/recompensas, GET /api/recompensas/emblemas
 │   ├── RegistroController.java            → POST /api/registro
 │   ├── RegistroColaboradorController.java → POST /api/registro/colaborador
 │   └── ColaboradorAuthController.java     → GET /api/colaborador/me
@@ -116,6 +122,7 @@ com.pontuaplus.pontua_plus/
 │   ├── AlunoDTO.java
 │   ├── DashboardDTO.java
 │   ├── RankingDTO.java
+│   ├── RecompensaDTO.java
 │   └── RegistroAlunoDTO.java
 │
 ├── entity/
@@ -124,7 +131,9 @@ com.pontuaplus.pontua_plus/
 │   ├── Nota.java
 │   ├── Frequencia.java
 │   ├── AtividadeExtra.java
-│   └── Pontuacao.java
+│   ├── Pontuacao.java
+│   ├── Recompensa.java           → Catálogo de recompensas por tier
+│   └── EmblemaDigital.java       → Emblema conquistado por aluno/bimestre
 │
 ├── enums/
 │   ├── Ranking.java              → BRONZE | PRATA | OURO | DIAMOND
@@ -137,6 +146,8 @@ com.pontuaplus.pontua_plus/
 │   ├── FrequenciaRepository.java
 │   ├── AtividadeExtraRepository.java
 │   ├── PontuacaoRepository.java
+│   ├── RecompensaRepository.java
+│   ├── EmblemaDigitalRepository.java
 │   └── UsuarioRepository.java
 │
 └── service/
@@ -144,6 +155,7 @@ com.pontuaplus.pontua_plus/
     ├── ColaboradorService.java
     ├── DashboardService.java
     ├── PontuacaoService.java
+    ├── RecompensaService.java
     └── CustomUserDetailsService.java
 ```
 

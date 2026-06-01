@@ -8,6 +8,15 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- Tela de Recompensas (`/recompensas.html`) com card de status, seções por tier e modal "em breve" para resgate
+- Endpoint `GET /api/recompensas` com catálogo de recompensas por tier e status atual do aluno
+- Endpoint `GET /api/recompensas/emblemas` retornando apenas os emblemas do aluno autenticado
+- Entidade `Recompensa` (catálogo estático) e `EmblemaDigital` (1 emblema por aluno por bimestre)
+- `RecompensaService.montarRecompensas()` com lógica de desbloqueio: somente o tier atual do aluno permite resgate
+- Criação automática de emblema em `PontuacaoService.calcularPontuacaoAluno()` ao final de cada cálculo
+- Seção "Emblemas Digitais" na página de perfil, carregada via `GET /api/recompensas/emblemas`
+- Seed de 9 recompensas fictícias (parceiros locais de Teresina/Timon) e 17 emblemas no `create_database.sql`
+- Link "Recompensas" habilitado na navegação global (dashboard, ranking e perfil)
 - Tela de Ranking (`/ranking.html`) com cards por tier (Diamond, Ouro, Prata, Bronze) e lista de alunos expansível por clique
 - Endpoint `GET /api/ranking` com controle de acesso por tier — alunos só visualizam dados dos tiers iguais ou superiores ao seu nível
 - `RankingController` injetando `Authentication` como parâmetro de método em vez de `SecurityContextHolder`
@@ -61,6 +70,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 - `DataInitializer` agora re-codifica a senha do usuário de teste ao iniciar em modo `dev`, eliminando incompatibilidade entre hash BCrypt do SQL e a senha `123456`
 - Parâmetro `aluno` renomeado para `colaborador` em `renderizarPerfil` de `colaborador-perfil.js` — o endpoint retorna dados de colaborador, não de aluno
 - Ícone de taça (ranking) em `dashboard.html` e `ranking.html` estava incompleto — faltavam os dois `path` do pedestal do troféu
+- Barra de progresso na tela de Recompensas piscava ao carregar — causado por `transition: width 1s` e animação shimmer do `.progress-fill`; resolvido com classe `.progress-fill-static` que desativa transição e animação apenas nessa barra
 - XSS em `dashboard.js` — dados da API escapados com `escapeHtml()` antes de inserção via `innerHTML`
 - Chamada duplicada à API em `colaborador-perfil.js`
 - `console.error` removido dos arquivos JS para não expor stack traces em produção

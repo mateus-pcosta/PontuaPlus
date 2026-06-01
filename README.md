@@ -186,7 +186,7 @@ src/
 └── main/
     ├── java/com/pontuaplus/pontua_plus/
     │   ├── config/         # Configurações de segurança, CORS e dados iniciais (dev)
-    │   ├── controller/     # Endpoints REST (Auth, Dashboard, Registro, Ranking)
+    │   ├── controller/     # Endpoints REST (Auth, Dashboard, Registro, Ranking, Recompensas)
     │   ├── dto/            # Objetos de transferência de dados
     │   ├── entity/         # Entidades JPA (Aluno, Nota, Frequencia, etc.)
     │   ├── enums/          # Enumerações (Ranking, TipoAtividade, TipoUsuario)
@@ -210,6 +210,8 @@ src/
 | POST   | `/api/registro`     | Cadastrar novo aluno                             | Não          |
 | GET    | `/api/dashboard`    | Dados do aluno autenticado                       | Sim          |
 | GET    | `/api/ranking`      | Ranking com tiers acessíveis conforme nível      | Sim          |
+| GET    | `/api/recompensas`  | Catálogo de recompensas por tier + status atual  | Sim          |
+| GET    | `/api/recompensas/emblemas` | Emblemas digitais conquistados pelo aluno | Sim          |
 
 ---
 

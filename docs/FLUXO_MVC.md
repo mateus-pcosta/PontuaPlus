@@ -91,6 +91,8 @@ Controllers **não contêm regras de negócio** — apenas orquestram a chamada 
 | `AuthController` | `GET /api/auth/me` | Retorna dados do aluno logado |
 | `DashboardController` | `GET /api/dashboard` | Dados consolidados do dashboard |
 | `RankingController` | `GET /api/ranking` | Ranking com tiers acessíveis por nível do aluno |
+| `RecompensaController` | `GET /api/recompensas` | Catálogo de recompensas por tier + status + emblemas |
+| `RecompensaController` | `GET /api/recompensas/emblemas` | Apenas os emblemas do aluno (usado pelo perfil) |
 | `RegistroController` | `POST /api/registro` | Cadastro de aluno |
 | `RegistroColaboradorController` | `POST /api/registro/colaborador` | Cadastro de colaborador |
 | `ColaboradorAuthController` | `GET /api/colaborador/me` | Dados do colaborador logado |
@@ -137,8 +139,9 @@ public class PontuacaoService {
 |---|---|
 | `AlunoService` | CRUD de alunos, validação de duplicatas, cálculo do bimestre atual |
 | `ColaboradorService` | CRUD de colaboradores, validação de duplicatas |
-| `PontuacaoService` | Cálculo de pontos por bimestre, atualização do ranking e montagem do RankingDTO com controle de acesso por tier |
+| `PontuacaoService` | Cálculo de pontos por bimestre, atualização do ranking e criação automática de emblema digital ao final de cada cálculo |
 | `DashboardService` | Montagem do DTO do dashboard — retorna todo o histórico de notas e frequências para os gráficos, filtrando atividades extras pelo bimestre atual |
+| `RecompensaService` | Monta o catálogo de recompensas filtrado por tier, calcula o status atual do aluno (pontos, próximo nível) e retorna os emblemas conquistados |
 | `CustomUserDetailsService` | Carrega usuário para o Spring Security |
 
 A anotação `@Transactional` garante que todas as operações de um método sejam confirmadas juntas ou desfeitas em caso de erro.
