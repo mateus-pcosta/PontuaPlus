@@ -27,6 +27,12 @@ flowchart TD
             C4[RecompensaController\n/api/recompensas]
             C5[RegistroController\n/api/registro]
             C6[ColaboradorAuthController\n/api/colaborador]
+            C7[ResponsavelAuthController\n/api/responsavel]
+            C8[AdmController\n/api/adm]
+            C9[DiretorController\n/api/diretor]
+            C10[EventosController\n/api/eventos]
+            C11[DevController\n/api/dev]
+            C12[RegistroResponsavelController\n/api/registro/responsavel]
         end
 
         subgraph Services["Service Layer"]
@@ -36,6 +42,8 @@ flowchart TD
             S4[RecompensaService]
             S5[ColaboradorService]
             S6[CustomUserDetailsService]
+            S7[EventosService]
+            S8[ResponsavelService]
         end
 
         subgraph Repositories["Repository Layer (Spring Data JPA)"]
@@ -47,6 +55,8 @@ flowchart TD
             R6[UsuarioRepository]
             R7[RecompensaRepository]
             R8[EmblemaDigitalRepository]
+            R9[ResponsavelRepository]
+            R10[ColaboradorRepository]
         end
 
         subgraph Config["Config"]
@@ -110,24 +120,41 @@ com.pontuaplus.pontua_plus/
 │   └── DataInitializer.java      → Carga inicial de dados de teste
 │
 ├── controller/
-│   ├── AuthController.java                → POST /api/auth/login
+│   ├── AuthController.java                → GET /api/auth/me (alunos)
 │   ├── DashboardController.java           → GET /api/dashboard
 │   ├── RankingController.java             → GET /api/ranking
 │   ├── RecompensaController.java          → GET /api/recompensas, GET /api/recompensas/emblemas
 │   ├── RegistroController.java            → POST /api/registro
 │   ├── RegistroColaboradorController.java → POST /api/registro/colaborador
-│   └── ColaboradorAuthController.java     → GET /api/colaborador/me
+│   ├── RegistroResponsavelController.java → POST /api/registro/responsavel
+│   ├── ColaboradorAuthController.java     → GET /api/colaborador/me
+│   ├── ResponsavelAuthController.java     → GET /api/responsavel/me, GET /api/responsavel/filhos, POST /api/responsavel/vincular
+│   ├── AdmController.java                 → GET /api/adm/dashboard
+│   ├── DiretorController.java             → GET /api/diretor/dashboard
+│   ├── EventosController.java             → GET /api/eventos, GET /api/eventos/tipos, POST /api/eventos/submeter
+│   └── DevController.java                 → GET /api/dev/stats
 │
 ├── dto/
-│   ├── AlunoDTO.java
+│   ├── AlunoDTO.java             → inclui bimestreAtual
+│   ├── AlunoResumoDTO.java
+│   ├── AdmDashboardDTO.java
+│   ├── DiretorDashboardDTO.java
+│   ├── DevStatsDTO.java
 │   ├── DashboardDTO.java
 │   ├── RankingDTO.java
 │   ├── RecompensaDTO.java
-│   └── RegistroAlunoDTO.java
+│   ├── RegistroAlunoDTO.java
+│   ├── RegistroResponsavelDTO.java
+│   ├── SubmeterAtividadeDTO.java
+│   ├── TipoAtividadeDTO.java
+│   ├── AtividadeExtraDetalhadaDTO.java
+│   └── VincularAlunoDTO.java
 │
 ├── entity/
 │   ├── Usuario.java              → Entidade base (herança JOINED)
 │   ├── Aluno.java                → Estende Usuario
+│   ├── Colaborador.java          → Estende Usuario (PROFESSOR, ADMINISTRADOR, DIRETOR, DEV, COORDENADOR)
+│   ├── Responsavel.java          → Estende Usuario
 │   ├── Nota.java
 │   ├── Frequencia.java
 │   ├── AtividadeExtra.java
@@ -138,7 +165,7 @@ com.pontuaplus.pontua_plus/
 ├── enums/
 │   ├── Ranking.java              → BRONZE | PRATA | OURO | DIAMOND
 │   ├── TipoAtividade.java        → Tipos de atividades extracurriculares
-│   └── TipoUsuario.java          → ALUNO | PROFESSOR | ADMIN
+│   └── TipoUsuario.java          → ALUNO | RESPONSAVEL | PROFESSOR | ADMINISTRADOR | COORDENADOR | DIRETOR | DEV
 │
 ├── repository/
 │   ├── AlunoRepository.java
@@ -148,14 +175,18 @@ com.pontuaplus.pontua_plus/
 │   ├── PontuacaoRepository.java
 │   ├── RecompensaRepository.java
 │   ├── EmblemaDigitalRepository.java
-│   └── UsuarioRepository.java
+│   ├── UsuarioRepository.java
+│   ├── ColaboradorRepository.java
+│   └── ResponsavelRepository.java
 │
 └── service/
     ├── AlunoService.java
     ├── ColaboradorService.java
+    ├── ResponsavelService.java
     ├── DashboardService.java
     ├── PontuacaoService.java
     ├── RecompensaService.java
+    ├── EventosService.java
     └── CustomUserDetailsService.java
 ```
 

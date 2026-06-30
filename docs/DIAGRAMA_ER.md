@@ -12,6 +12,23 @@ erDiagram
         varchar tipo
     }
 
+    COLABORADORES {
+        bigint id PK
+        varchar matricula UK
+        varchar tipo
+    }
+
+    RESPONSAVEIS {
+        bigint id PK
+        varchar cpf UK
+        varchar telefone
+    }
+
+    RESPONSAVEIS_ALUNOS {
+        bigint responsavel_id FK
+        bigint aluno_id FK
+    }
+
     ALUNOS {
         bigint id PK,FK
         varchar matricula UK
@@ -67,10 +84,13 @@ erDiagram
     }
 
     USUARIOS ||--|| ALUNOS : "herança (JOINED)"
+    USUARIOS ||--|| COLABORADORES : "herança (JOINED)"
+    USUARIOS ||--|| RESPONSAVEIS : "herança (JOINED)"
     ALUNOS ||--o{ NOTAS : "possui"
     ALUNOS ||--o{ FREQUENCIAS : "possui"
     ALUNOS ||--o{ ATIVIDADES_EXTRAS : "possui"
     ALUNOS ||--|| PONTUACOES : "possui"
+    RESPONSAVEIS }o--o{ ALUNOS : "responsavel_alunos"
 ```
 
 ---
@@ -86,7 +106,28 @@ Tabela base da herança. Armazena dados comuns a todos os tipos de usuário.
 | nome    | VARCHAR     | NOT NULL         | Nome completo                    |
 | email   | VARCHAR     | NOT NULL, UNIQUE | E-mail de login                  |
 | senha   | VARCHAR     | NOT NULL         | Senha (criptografada)            |
-| tipo    | VARCHAR     | NOT NULL         | Enum: ALUNO, PROFESSOR, ADMIN    |
+| tipo    | VARCHAR     | NOT NULL         | Enum: ALUNO, RESPONSAVEL, PROFESSOR, ADMINISTRADOR, COORDENADOR, DIRETOR, DEV |
+
+---
+
+### `responsaveis`
+Estende `usuarios` com dados do responsável (pai/mãe/tutor). Vinculado a um ou mais alunos.
+
+| Coluna   | Tipo    | Restrições       | Descrição                        |
+|----------|---------|------------------|----------------------------------|
+| id       | BIGINT  | PK, FK→usuarios  | Referência à tabela base         |
+| cpf      | VARCHAR | NOT NULL, UNIQUE | CPF do responsável               |
+| telefone | VARCHAR | —                | Telefone para notificações       |
+
+---
+
+### `responsaveis_alunos`
+Tabela de junção entre responsáveis e alunos (ManyToMany).
+
+| Coluna          | Tipo   | Restrições        | Descrição             |
+|-----------------|--------|-------------------|-----------------------|
+| responsavel_id  | BIGINT | FK→responsaveis   | ID do responsável     |
+| aluno_id        | BIGINT | FK→alunos         | ID do aluno (filho)   |
 
 ---
 

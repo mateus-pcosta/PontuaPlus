@@ -43,6 +43,13 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 - `ConflictException` com retorno HTTP 409 para duplicatas de e-mail e matrícula
 
 ### Changed
+- `DataInitializer` estendido com usuários de teste para todos os perfis: RESPONSAVEL (`resp@pontua.com`), PROFESSOR (`prof@pontua.com`), ADMINISTRADOR (`adm@pontua.com`), DIRETOR (`diretor@pontua.com`) e DEV (`dev@pontua.com`) — todos com senha `123456`; criação via método `criarNaoAlunos()` com guard `existsByEmail` para evitar duplicatas em reinicializações
+- `DataInitializer` agora re-encoda senhas de **todos** os usuários de teste existentes no startup (não apenas `mateus@pontua.com`) usando `usuarioRepository.findByEmail()` na superclasse `Usuario`
+- `SecurityConfig` anotado com `@EnableMethodSecurity` para habilitar `@PreAuthorize` nos controllers; `/responsavel-registro.html` adicionado a `permitAll`
+- `ColaboradorRepository` — adicionado `countByTipo(TipoUsuario)` (necessário para `DiretorController` e `AdmController`)
+- `UsuarioRepository` — adicionado `countByTipo(TipoUsuario)` para contagens por perfil
+- Link "Eventos" habilitado na barra de navegação global de `dashboard.html`, `ranking.html`, `recompensas.html` e `perfil.html` — era `<span class="nav-link disabled">` e passou a `<a href="/eventos.html">`
+- Formulário de registro de colaborador (`colaborador-registro.html`) atualizado: opções de cargo agora refletem os tipos ativos do sistema — adicionados `DEV` e `ADMINISTRADOR`, removido `COORDENADOR` (usuários existentes com esse tipo continuam funcionando via enum; novos registros devem usar `ADMINISTRADOR`)
 - `DashboardService` agora retorna todos os registros de notas e frequências sem filtro de bimestre, permitindo exibir histórico completo nos gráficos
 - Gráfico de evolução das notas em `dashboard.js` reorganizado para exibir dados agrupados por bimestre em ordem cronológica (bim 1 → bim 4)
 - Gráfico de frequência mensal reordenado cronologicamente por `(ano * 12 + mes)`
@@ -66,6 +73,12 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 - Dados de teste no SQL corrigidos com valores realistas e tipos de atividade válidos
 
 ### Fixed
+- `GET /api/auth/me` retornava 404 para usuários do tipo Responsavel — adicionado endpoint `GET /api/responsavel/me` em `ResponsavelAuthController`; `responsavel/dashboard.html` atualizado para chamar o endpoint correto
+- `TypeError` em `eventos.html` ao chamar `me.nome.split()` sem guard — adicionada verificação de `meRes.ok` e uso de `(me.nome || '')` antes do split para evitar crash silencioso seguido de redirect inesperado para login
+- `ROLE_COORDENADOR` removido do `TipoUsuario` quebrava usuários com esse tipo no banco de dados (mapeamento JPA falha) — `COORDENADOR` readicionado ao enum e tratado no `CustomSuccessHandler` com redirect para `/adm/dashboard.html`
+- `bimestreAtual` ausente no `AlunoDTO` — campo adicionado ao DTO e incluído no `fromEntity()`, corrigindo card "Bimestre Atual" em `eventos.html` que sempre exibia "—"
+- `DiretorController` usava `colaboradorRepository.count()` sem filtro de tipo, inflando o card "Equipe Total" com usuários DEV e outros — substituído por soma de `countByTipo(PROFESSOR)`, `countByTipo(ADMINISTRADOR)` e `countByTipo(DIRETOR)`
+- `totalDiretores` era calculado em `AdmDashboardDTO` e retornado por `AdmController` mas nunca exibido em `adm/dashboard.html` — card "Diretores" adicionado à grade de métricas
 - Mensagem de erro no login não exibia ao retornar `?error` — `urlParams.get('error')` retorna `""` (falsy) para parâmetros sem valor; corrigido para `urlParams.has('error')`, mesmo fix aplicado ao `?logout`
 - `DataInitializer` agora re-codifica a senha do usuário de teste ao iniciar em modo `dev`, eliminando incompatibilidade entre hash BCrypt do SQL e a senha `123456`
 - Parâmetro `aluno` renomeado para `colaborador` em `renderizarPerfil` de `colaborador-perfil.js` — o endpoint retorna dados de colaborador, não de aluno

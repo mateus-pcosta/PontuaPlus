@@ -88,14 +88,24 @@ Controllers **não contêm regras de negócio** — apenas orquestram a chamada 
 
 | Controller | Rota | Função |
 |---|---|---|
-| `AuthController` | `GET /api/auth/me` | Retorna dados do aluno logado |
+| `AuthController` | `GET /api/auth/me` | Retorna dados do aluno logado (apenas ALUNO) |
 | `DashboardController` | `GET /api/dashboard` | Dados consolidados do dashboard |
 | `RankingController` | `GET /api/ranking` | Ranking com tiers acessíveis por nível do aluno |
 | `RecompensaController` | `GET /api/recompensas` | Catálogo de recompensas por tier + status + emblemas |
 | `RecompensaController` | `GET /api/recompensas/emblemas` | Apenas os emblemas do aluno (usado pelo perfil) |
 | `RegistroController` | `POST /api/registro` | Cadastro de aluno |
 | `RegistroColaboradorController` | `POST /api/registro/colaborador` | Cadastro de colaborador |
+| `RegistroResponsavelController` | `POST /api/registro/responsavel` | Cadastro de responsável |
 | `ColaboradorAuthController` | `GET /api/colaborador/me` | Dados do colaborador logado |
+| `ResponsavelAuthController` | `GET /api/responsavel/me` | Dados do responsável logado |
+| `ResponsavelAuthController` | `GET /api/responsavel/filhos` | Lista alunos vinculados ao responsável |
+| `ResponsavelAuthController` | `POST /api/responsavel/vincular` | Vincula aluno ao responsável por matrícula |
+| `AdmController` | `GET /api/adm/dashboard` | Métricas do painel ADM |
+| `DiretorController` | `GET /api/diretor/dashboard` | Métricas do painel Diretor |
+| `EventosController` | `GET /api/eventos` | Lista atividades extras do aluno |
+| `EventosController` | `GET /api/eventos/tipos` | Catálogo de tipos de atividade |
+| `EventosController` | `POST /api/eventos/submeter` | Submete nova atividade extra |
+| `DevController` | `GET /api/dev/stats` | Estatísticas gerais do sistema |
 
 ---
 
@@ -139,6 +149,8 @@ public class PontuacaoService {
 |---|---|
 | `AlunoService` | CRUD de alunos, validação de duplicatas, cálculo do bimestre atual |
 | `ColaboradorService` | CRUD de colaboradores, validação de duplicatas |
+| `ResponsavelService` | CRUD de responsáveis, vinculação com alunos, listagem de filhos |
+| `EventosService` | Listagem e submissão de atividades extras do aluno |
 | `PontuacaoService` | Cálculo de pontos por bimestre, atualização do ranking e criação automática de emblema digital ao final de cada cálculo |
 | `DashboardService` | Montagem do DTO do dashboard — retorna todo o histórico de notas e frequências para os gráficos, filtrando atividades extras pelo bimestre atual |
 | `RecompensaService` | Monta o catálogo de recompensas filtrado por tier, calcula o status atual do aluno (pontos, próximo nível) e retorna os emblemas conquistados |
@@ -176,13 +188,16 @@ public interface PontuacaoRepository extends JpaRepository<Pontuacao, Long> {
 
 | Repository | Entidade gerenciada |
 |---|---|
-| `UsuarioRepository` | `Usuario` |
+| `UsuarioRepository` | `Usuario` — base para todos os tipos; inclui `findByEmail`, `existsByEmail`, `countByTipo` |
 | `AlunoRepository` | `Aluno` |
-| `ColaboradorRepository` | `Colaborador` |
+| `ColaboradorRepository` | `Colaborador` — inclui `countByTipo` para contagens por cargo |
+| `ResponsavelRepository` | `Responsavel` |
 | `NotaRepository` | `Nota` |
 | `FrequenciaRepository` | `Frequencia` |
 | `AtividadeExtraRepository` | `AtividadeExtra` |
 | `PontuacaoRepository` | `Pontuacao` |
+| `RecompensaRepository` | `Recompensa` |
+| `EmblemaDigitalRepository` | `EmblemaDigital` |
 
 ---
 
