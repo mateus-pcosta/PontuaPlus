@@ -31,16 +31,28 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
                 response.sendRedirect("/dashboard.html");
                 break;
 
+            case "ROLE_RESPONSAVEL":
+                response.sendRedirect("/responsavel/dashboard.html");
+                break;
+
             case "ROLE_PROFESSOR":
                 response.sendRedirect("/professor-dashboard.html");
                 break;
 
+            case "ROLE_ADMINISTRADOR":
+                response.sendRedirect("/adm/dashboard.html");
+                break;
+
             case "ROLE_COORDENADOR":
-                response.sendRedirect("/coordenador/dashboard");
+                response.sendRedirect("/adm/dashboard.html");
                 break;
 
             case "ROLE_DIRETOR":
-                response.sendRedirect("/diretor/dashboard");
+                response.sendRedirect("/diretor/dashboard.html");
+                break;
+
+            case "ROLE_DEV":
+                response.sendRedirect("/dev/dashboard.html");
                 break;
 
             default:

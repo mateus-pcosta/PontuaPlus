@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel DEV - Pontua+</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+    <header class="header">
+        <img src="/img/logopreto.png" alt="Pontua+" class="header-logo">
+        <nav class="nav-menu">
+            <a href="/dev/dashboard.html" class="nav-link active">DEV</a>
+            <span class="nav-link disabled">Logs</span>
+            <span class="nav-link disabled">Config</span>
+        </nav>
+        <div class="user-info">
+            <span id="userName">Carregando...</span>
+            <a href="/colaborador-perfil.html" class="user-avatar animate-wiggle" id="userAvatar" style="text-decoration:none;">D</a>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Carregando dados...</p>
+        </div>
+
+        <div id="dashboardContent" style="display:none;">
+
+            <!-- Stats do sistema -->
+            <section class="metrics-grid">
+                <div class="metric-card animate-fade-in-up">
+                    <span class="metric-value" id="totalUsuarios">—</span>
+                    <span class="metric-label">Usuários Total</span>
+                </div>
+                <div class="metric-card animate-fade-in-up delay-100">
+                    <span class="metric-value" id="totalAlunos">—</span>
+                    <span class="metric-label">Alunos</span>
+                </div>
+                <div class="metric-card animate-fade-in-up delay-200">
+                    <span class="metric-value" id="totalProfessores">—</span>
+                    <span class="metric-label">Professores</span>
+                </div>
+                <div class="metric-card animate-fade-in-up delay-300">
+                    <span class="metric-value" id="totalResponsaveis">—</span>
+                    <span class="metric-label">Responsáveis</span>
+                </div>
+            </section>
+
+            <!-- Acesso a perfis -->
+            <div class="card" style="margin-top: 24px;">
+                <h2>Acessar Dashboards</h2>
+                <p style="color: var(--cinza-texto, #666); font-size:14px; margin: 8px 0 20px;">
+                    Como DEV, você tem acesso a todos os painéis da plataforma.
+                </p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px;">
+                    <a href="/dashboard.html" class="btn btn-primary" style="text-align:center; text-decoration:none; display:block; padding:12px;">
+                        Dashboard Aluno
+                    </a>
+                    <a href="/professor-dashboard.html" class="btn btn-primary" style="text-align:center; text-decoration:none; display:block; padding:12px;">
+                        Dashboard Professor
+                    </a>
+                    <a href="/adm/dashboard.html" class="btn btn-primary" style="text-align:center; text-decoration:none; display:block; padding:12px;">
+                        Dashboard ADM
+                    </a>
+                    <a href="/responsavel/dashboard.html" class="btn btn-primary" style="text-align:center; text-decoration:none; display:block; padding:12px;">
+                        Dashboard Responsável
+                    </a>
+                    <a href="/diretor/dashboard.html" class="btn btn-primary" style="text-align:center; text-decoration:none; display:block; padding:12px;">
+                        Dashboard Diretor
+                    </a>
+                </div>
+            </div>
+
+            <!-- Distribuição de perfis -->
+            <div class="card" style="margin-top: 24px;">
+                <h2>Distribuição por Perfil</h2>
+                <table style="margin-top: 12px;">
+                    <thead>
+                        <tr>
+                            <th>Perfil</th>
+                            <th>Quantidade</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaPerfis"></tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="logoutModal">
+        <div class="modal-content">
+            <h3>Deseja realmente sair?</h3>
+            <div class="modal-buttons">
+                <button class="btn-confirm" onclick="logout()">Sair</button>
+                <button class="btn-cancel" onclick="closeLogoutModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openLogoutModal() { document.getElementById('logoutModal').style.display = 'flex'; }
+        function closeLogoutModal() { document.getElementById('logoutModal').style.display = 'none'; }
+        function logout() { window.location.href = '/api/auth/logout'; }
+
+        async function carregar() {
+            try {
+                const [meRes, statsRes] = await Promise.all([
+                    fetch('/api/colaborador/me'),
+                    fetch('/api/dev/stats')
+                ]);
+
+                if (meRes.status === 401 || meRes.status === 403 || statsRes.status === 403) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+
+                const me = await meRes.json();
+                const stats = await statsRes.json();
+
+                document.getElementById('userName').textContent = me.nome;
+                document.getElementById('userAvatar').textContent = me.nome.split(' ').map(n => n[0]).slice(0, 2).join('');
+
+                document.getElementById('totalUsuarios').textContent = stats.totalUsuarios;
+                document.getElementById('totalAlunos').textContent = stats.totalAlunos;
+                document.getElementById('totalProfessores').textContent = stats.totalProfessores;
+                document.getElementById('totalResponsaveis').textContent = stats.totalResponsaveis;
+
+                document.getElementById('tabelaPerfis').innerHTML = `
+                    <tr><td>ALUNO</td><td>${stats.totalAlunos}</td></tr>
+                    <tr><td>RESPONSAVEL</td><td>${stats.totalResponsaveis}</td></tr>
+                    <tr><td>PROFESSOR</td><td>${stats.totalProfessores}</td></tr>
+                    <tr><td>ADMINISTRADOR</td><td>${stats.totalAdministradores}</td></tr>
+                    <tr><td>DIRETOR</td><td>${stats.totalDiretores}</td></tr>
+                    <tr><td>DEV</td><td>${stats.totalDevs}</td></tr>
+                `;
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('dashboardContent').style.display = 'block';
+            } catch (e) {
+                window.location.href = '/login.html';
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', carregar);
+    </script>
+
+</body>
+</html>

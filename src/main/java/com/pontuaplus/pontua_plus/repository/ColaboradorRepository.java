@@ -1,6 +1,7 @@
 package com.pontuaplus.pontua_plus.repository;
 
 import com.pontuaplus.pontua_plus.entity.Colaborador;
+import com.pontuaplus.pontua_plus.enums.TipoUsuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,5 +12,5 @@ public interface ColaboradorRepository extends JpaRepository<Colaborador, Long> 
     Optional<Colaborador> findByMatricula(String matricula);
     Optional<Colaborador> findByEmail(String email);
     boolean existsByMatricula(String matricula);
-    
+    long countByTipo(TipoUsuario tipo);
 }

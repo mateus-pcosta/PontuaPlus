@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Responsável - Pontua+</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+    <header class="header">
+        <img src="/img/logopreto.png" alt="Pontua+" class="header-logo">
+        <nav class="nav-menu">
+            <a href="/responsavel/dashboard.html" class="nav-link active">Meus Filhos</a>
+            <span class="nav-link disabled">Notificações</span>
+        </nav>
+        <div class="user-info">
+            <span id="userName">Carregando...</span>
+            <a class="user-avatar animate-wiggle" id="userAvatar" style="text-decoration:none;">R</a>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Carregando dados...</p>
+        </div>
+
+        <div id="dashboardContent" style="display:none;">
+
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                    <h2>Meus Filhos</h2>
+                    <button class="btn btn-primary" onclick="abrirVincular()">+ Vincular Aluno</button>
+                </div>
+
+                <div id="listaVazia" style="display:none; color: var(--cinza-texto, #666); padding: 16px 0;">
+                    Nenhum filho vinculado ainda. Use o botão acima para vincular pelo número de matrícula.
+                </div>
+
+                <table id="tabelaFilhos" style="display:none;">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Matrícula</th>
+                            <th>Série</th>
+                            <th>Turma</th>
+                            <th>Escola</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoTabela"></tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modal vincular -->
+    <div class="modal-overlay" id="vincularModal" style="display:none;">
+        <div class="modal-content">
+            <h3>Vincular Aluno</h3>
+            <p style="margin: 8px 0 16px; color: var(--cinza-texto, #666); font-size: 14px;">
+                Informe a matrícula do seu filho para vinculá-lo à sua conta.
+            </p>
+            <div class="form-group">
+                <input type="text" id="matriculaVincular" class="form-control" placeholder="Número de matrícula">
+            </div>
+            <div id="vincularAlerta" style="display:none; margin-top:8px; font-size:14px;"></div>
+            <div class="modal-buttons" style="margin-top:16px;">
+                <button class="btn-confirm" onclick="vincularAluno()">Vincular</button>
+                <button class="btn-cancel" onclick="fecharVincular()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="logoutModal">
+        <div class="modal-content">
+            <h3>Deseja realmente sair?</h3>
+            <div class="modal-buttons">
+                <button class="btn-confirm" onclick="logout()">Sair</button>
+                <button class="btn-cancel" onclick="closeLogoutModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openLogoutModal() { document.getElementById('logoutModal').style.display = 'flex'; }
+        function closeLogoutModal() { document.getElementById('logoutModal').style.display = 'none'; }
+        function logout() { window.location.href = '/api/auth/logout'; }
+        function abrirVincular() { document.getElementById('vincularModal').style.display = 'flex'; }
+        function fecharVincular() {
+            document.getElementById('vincularModal').style.display = 'none';
+            document.getElementById('matriculaVincular').value = '';
+            document.getElementById('vincularAlerta').style.display = 'none';
+        }
+
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+
+        function renderizarFilhos(filhos) {
+            if (filhos.length === 0) {
+                document.getElementById('listaVazia').style.display = 'block';
+                document.getElementById('tabelaFilhos').style.display = 'none';
+                return;
+            }
+            document.getElementById('listaVazia').style.display = 'none';
+            document.getElementById('tabelaFilhos').style.display = 'table';
+
+            const corpo = document.getElementById('corpoTabela');
+            corpo.innerHTML = filhos.map(f => `
+                <tr>
+                    <td>${escapeHtml(f.nome)}</td>
+                    <td>${escapeHtml(f.matricula)}</td>
+                    <td>${escapeHtml(f.serie ?? '—')}</td>
+                    <td>${escapeHtml(f.turma ?? '—')}</td>
+                    <td>${escapeHtml(f.colegio)}</td>
+                </tr>
+            `).join('');
+        }
+
+        async function carregar() {
+            try {
+                const res = await fetch('/api/responsavel/filhos');
+                if (res.status === 401 || res.status === 403) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+                const filhos = await res.json();
+
+                const meRes = await fetch('/api/responsavel/me');
+                if (meRes.ok) {
+                    const me = await meRes.json();
+                    document.getElementById('userName').textContent = me.nome;
+                    document.getElementById('userAvatar').textContent = (me.nome || '').split(' ').map(n => n[0]).filter(Boolean).slice(0, 2).join('');
+                }
+
+                renderizarFilhos(filhos);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('dashboardContent').style.display = 'block';
+            } catch (e) {
+                window.location.href = '/login.html';
+            }
+        }
+
+        async function vincularAluno() {
+            const matricula = document.getElementById('matriculaVincular').value.trim();
+            const alerta = document.getElementById('vincularAlerta');
+
+            if (!matricula) {
+                alerta.textContent = 'Informe a matrícula.';
+                alerta.style.color = 'red';
+                alerta.style.display = 'block';
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/responsavel/vincular', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ matricula })
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    alerta.textContent = data.success;
+                    alerta.style.color = 'green';
+                    alerta.style.display = 'block';
+                    setTimeout(() => { fecharVincular(); carregar(); }, 1500);
+                } else {
+                    alerta.textContent = data.error || 'Matrícula não encontrada.';
+                    alerta.style.color = 'red';
+                    alerta.style.display = 'block';
+                }
+            } catch (e) {
+                alerta.textContent = 'Erro ao vincular. Tente novamente.';
+                alerta.style.color = 'red';
+                alerta.style.display = 'block';
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', carregar);
+    </script>
+
+</body>
+</html>

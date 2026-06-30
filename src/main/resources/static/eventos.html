@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventos - Pontua+</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body style="background: var(--cinza-claro);">
+
+    <div class="header">
+        <img src="/img/logopreto.png" alt="Pontua+" class="header-logo">
+        <nav class="nav-menu">
+            <a href="/dashboard.html" class="nav-link">Desempenho</a>
+            <a href="/ranking.html" class="nav-link">Ranking</a>
+            <a href="/recompensas.html" class="nav-link">Recompensas</a>
+            <a href="/eventos.html" class="nav-link active">Eventos</a>
+            <span class="nav-link disabled">Acessibilidade</span>
+        </nav>
+        <div class="user-info">
+            <a href="/perfil.html" class="user-avatar animate-wiggle" id="userAvatar" style="text-decoration:none;">A</a>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Carregando eventos...</p>
+        </div>
+
+        <div id="eventoContent" style="display:none;">
+
+            <!-- Stats -->
+            <div class="top-cards">
+                <div class="metric-card animate-fade-in-up">
+                    <div class="metric-label">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:middle;margin-right:6px;">
+                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                        </svg>
+                        Atividades Submetidas
+                    </div>
+                    <div class="metric-value" id="totalAtividades">0</div>
+                    <div class="metric-subtitle">no total</div>
+                </div>
+
+                <div class="metric-card animate-fade-in-up delay-100">
+                    <div class="metric-label">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:middle;margin-right:6px;">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                        </svg>
+                        Pontos Extras
+                    </div>
+                    <div class="metric-value" id="totalPontosExtras">0</div>
+                    <div class="metric-subtitle">de 50 possíveis</div>
+                </div>
+
+                <div class="metric-card animate-fade-in-up delay-200">
+                    <div class="metric-label">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:middle;margin-right:6px;">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        Bimestre Atual
+                    </div>
+                    <div class="metric-value" id="bimestreAtual">—</div>
+                    <div class="metric-subtitle">bimestre ativo</div>
+                </div>
+
+                <div class="metric-card animate-fade-in-up delay-300">
+                    <div class="metric-label">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:middle;margin-right:6px;">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                        Atividades Disponíveis
+                    </div>
+                    <div class="metric-value" id="totalTipos">0</div>
+                    <div class="metric-subtitle">tipos no catálogo</div>
+                </div>
+            </div>
+
+            <!-- Submeter nova atividade -->
+            <div class="card card-glass animate-fade-in-up" style="margin-top: 24px;">
+                <h2 class="text-gradient" style="margin-bottom: 20px;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:middle;margin-right:8px;">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="16"/>
+                        <line x1="8" y1="12" x2="16" y2="12"/>
+                    </svg>
+                    Submeter Nova Atividade
+                </h2>
+
+                <div id="submeterAlerta" style="display:none; padding:12px 16px; border-radius:8px; margin-bottom:16px; font-size:14px;"></div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr auto; gap:16px; align-items:end;">
+                    <div class="form-group" style="margin:0;">
+                        <label for="tipoSelect">Tipo de Atividade *</label>
+                        <select id="tipoSelect" class="form-control">
+                            <option value="">Selecione o tipo...</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin:0;">
+                        <label for="nomeAtividade">Nome personalizado <span style="color:var(--cinza-escuro);font-size:12px;">(opcional)</span></label>
+                        <input type="text" id="nomeAtividade" class="form-control" placeholder="Ex: Olimpíada Municipal 2025">
+                    </div>
+                    <button class="btn btn-primary" onclick="submeterAtividade()" id="btnSubmeter" style="white-space:nowrap;">
+                        Submeter
+                    </button>
+                </div>
+
+                <div id="pontosPreview" style="display:none; margin-top:12px; font-size:13px; color:var(--cinza-escuro);">
+                    Esta atividade vale <strong id="pontosPreviewValor" style="color:var(--azul-royal);">0</strong> pontos.
+                </div>
+            </div>
+
+            <!-- Minhas Atividades -->
+            <div class="card card-glass animate-fade-in-up" style="margin-top: 24px;">
+                <h2 class="text-gradient" style="margin-bottom: 20px;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:middle;margin-right:8px;">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                        <polyline points="10 9 9 9 8 9"/>
+                    </svg>
+                    Minhas Atividades
+                </h2>
+
+                <div id="semAtividades" style="display:none; text-align:center; color:var(--cinza-escuro); padding:32px 0;">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="display:block;margin:0 auto 16px;opacity:0.4;">
+                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                    </svg>
+                    Você ainda não submeteu nenhuma atividade. Use o formulário acima para começar!
+                </div>
+
+                <div class="atividades-grid" id="atividadesGrid"></div>
+            </div>
+
+            <!-- Catálogo -->
+            <div class="card card-glass animate-fade-in-up" style="margin-top: 24px; margin-bottom: 40px;">
+                <h2 class="text-gradient" style="margin-bottom: 20px;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:middle;margin-right:8px;">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                    </svg>
+                    Catálogo de Atividades
+                </h2>
+                <p style="color:var(--cinza-escuro); font-size:14px; margin-bottom:20px;">
+                    Todas as atividades extracurriculares reconhecidas pela escola e seus respectivos pontos.
+                </p>
+                <div class="atividades-grid" id="catalogoGrid"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const tiposMap = {};
+        let atividadesDoAluno = [];
+
+        function escapeHtml(str) {
+            return String(str ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+
+        function renderizarAtividades(atividades) {
+            const grid = document.getElementById('atividadesGrid');
+            const semAtividades = document.getElementById('semAtividades');
+
+            if (!atividades || atividades.length === 0) {
+                semAtividades.style.display = 'block';
+                grid.style.display = 'none';
+                return;
+            }
+
+            semAtividades.style.display = 'none';
+            grid.style.display = 'grid';
+
+            // Agrupar por bimestre
+            const porBimestre = atividades.reduce((acc, a) => {
+                const b = a.bimestre ?? 0;
+                if (!acc[b]) acc[b] = [];
+                acc[b].push(a);
+                return acc;
+            }, {});
+
+            grid.innerHTML = Object.keys(porBimestre).sort((a, b) => b - a).map(bim => `
+                <div style="grid-column: 1 / -1;">
+                    <h3 style="font-size:14px; color:var(--cinza-escuro); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px;">
+                        ${bim}º Bimestre
+                    </h3>
+                </div>
+                ${porBimestre[bim].map(a => `
+                    <div class="atividade-card">
+                        <div class="atividade-nome">${escapeHtml(a.nome)}</div>
+                        <div class="atividade-tipo">${escapeHtml(a.tipo)}</div>
+                        <div class="atividade-pontos">+${escapeHtml(a.pontosConquistados)} pontos</div>
+                    </div>
+                `).join('')}
+            `).join('');
+        }
+
+        function renderizarCatalogo(tipos) {
+            document.getElementById('catalogoGrid').innerHTML = tipos.map(t => `
+                <div class="atividade-card">
+                    <div class="atividade-nome">${escapeHtml(t.descricao)}</div>
+                    <div class="atividade-tipo" style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px;">${escapeHtml(t.key.replace(/_/g,' '))}</div>
+                    <div class="atividade-pontos">+${t.pontos} pontos</div>
+                </div>
+            `).join('');
+        }
+
+        function preencherSelect(tipos) {
+            const select = document.getElementById('tipoSelect');
+            tipos.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t.key;
+                opt.textContent = `${t.descricao} (+${t.pontos} pts)`;
+                select.appendChild(opt);
+                tiposMap[t.key] = t;
+            });
+        }
+
+        document.getElementById('tipoSelect').addEventListener('change', function() {
+            const preview = document.getElementById('pontosPreview');
+            const tipo = tiposMap[this.value];
+            if (tipo) {
+                document.getElementById('pontosPreviewValor').textContent = tipo.pontos;
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+            }
+        });
+
+        async function submeterAtividade() {
+            const tipo = document.getElementById('tipoSelect').value;
+            const nome = document.getElementById('nomeAtividade').value.trim();
+            const alerta = document.getElementById('submeterAlerta');
+            const btn = document.getElementById('btnSubmeter');
+
+            if (!tipo) {
+                alerta.textContent = 'Selecione um tipo de atividade.';
+                alerta.style.background = '#f8d7da';
+                alerta.style.color = '#721c24';
+                alerta.style.display = 'block';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Submetendo...';
+
+            try {
+                const res = await fetch('/api/eventos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tipo, nome: nome || null })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    alerta.textContent = `✓ Atividade "${data.nome}" submetida com sucesso! +${data.pontosConquistados} pontos.`;
+                    alerta.style.background = '#d4edda';
+                    alerta.style.color = '#155724';
+                    alerta.style.display = 'block';
+
+                    document.getElementById('tipoSelect').value = '';
+                    document.getElementById('nomeAtividade').value = '';
+                    document.getElementById('pontosPreview').style.display = 'none';
+
+                    atividadesDoAluno = [data, ...atividadesDoAluno];
+                    renderizarAtividades(atividadesDoAluno);
+                    atualizarStats();
+                } else {
+                    alerta.textContent = data.error || 'Erro ao submeter atividade.';
+                    alerta.style.background = '#f8d7da';
+                    alerta.style.color = '#721c24';
+                    alerta.style.display = 'block';
+                }
+            } catch (e) {
+                alerta.textContent = 'Erro de conexão. Tente novamente.';
+                alerta.style.background = '#f8d7da';
+                alerta.style.color = '#721c24';
+                alerta.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Submeter';
+                setTimeout(() => { alerta.style.display = 'none'; }, 4000);
+            }
+        }
+
+        function atualizarStats() {
+            const total = atividadesDoAluno.length;
+            const pontos = atividadesDoAluno.reduce((acc, a) => acc + (a.pontosConquistados ?? 0), 0);
+            document.getElementById('totalAtividades').textContent = total;
+            document.getElementById('totalPontosExtras').textContent = Math.min(pontos, 50);
+        }
+
+        async function carregar() {
+            try {
+                const [meRes, atividadesRes, tiposRes] = await Promise.all([
+                    fetch('/api/auth/me'),
+                    fetch('/api/eventos'),
+                    fetch('/api/eventos/tipos')
+                ]);
+
+                if (!meRes.ok || atividadesRes.status === 401 || atividadesRes.status === 403) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+
+                const me = await meRes.json();
+                atividadesDoAluno = await atividadesRes.json();
+                const tipos = await tiposRes.json();
+
+                // Avatar
+                const iniciais = (me.nome || '').split(' ').map(n => n[0]).filter(Boolean).slice(0, 2).join('');
+                document.getElementById('userAvatar').textContent = iniciais;
+
+                // Bimestre atual
+                document.getElementById('bimestreAtual').textContent = me.bimestreAtual ?? '—';
+
+                // Stats
+                document.getElementById('totalTipos').textContent = tipos.length;
+                atualizarStats();
+
+                // Listas
+                preencherSelect(tipos);
+                renderizarAtividades(atividadesDoAluno);
+                renderizarCatalogo(tipos);
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('eventoContent').style.display = 'block';
+
+            } catch (e) {
+                window.location.href = '/login.html';
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', carregar);
+    </script>
+
+</body>
+</html>

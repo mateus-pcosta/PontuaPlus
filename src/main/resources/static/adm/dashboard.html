@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel ADM - Pontua+</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+    <header class="header">
+        <img src="/img/logopreto.png" alt="Pontua+" class="header-logo">
+        <nav class="nav-menu">
+            <a href="/adm/dashboard.html" class="nav-link active">Painel</a>
+            <span class="nav-link disabled">Atividades</span>
+            <span class="nav-link disabled">Semestre</span>
+            <span class="nav-link disabled">Professores</span>
+        </nav>
+        <div class="user-info">
+            <span id="userName">Carregando...</span>
+            <a href="/colaborador-perfil.html" class="user-avatar" id="userAvatar" style="text-decoration:none;">A</a>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Carregando dados...</p>
+        </div>
+
+        <div id="dashboardContent" style="display:none;">
+
+            <section class="metrics-grid">
+                <div class="metric-card animate-fade-in-up">
+                    <span class="metric-value" id="totalAlunos">—</span>
+                    <span class="metric-label">Alunos</span>
+                </div>
+                <div class="metric-card animate-fade-in-up delay-100">
+                    <span class="metric-value" id="totalResponsaveis">—</span>
+                    <span class="metric-label">Responsáveis</span>
+                </div>
+                <div class="metric-card animate-fade-in-up delay-200">
+                    <span class="metric-value" id="totalProfessores">—</span>
+                    <span class="metric-label">Professores</span>
+                </div>
+                <div class="metric-card animate-fade-in-up delay-300">
+                    <span class="metric-value" id="totalAdm">—</span>
+                    <span class="metric-label">Administradores</span>
+                </div>
+                <div class="metric-card animate-fade-in-up delay-400">
+                    <span class="metric-value" id="totalDiretores">—</span>
+                    <span class="metric-label">Diretores</span>
+                </div>
+            </section>
+
+            <div class="card" style="margin-top: 24px;">
+                <h2>Próximas funcionalidades</h2>
+                <ul style="padding: 16px 0 0 20px; line-height: 2;">
+                    <li>Gerenciar catálogo de atividades extras</li>
+                    <li>Aprovar ou rejeitar sugestões de professores</li>
+                    <li>Abrir e fechar semestre/ciclo</li>
+                    <li>Configurar peso e pontuação por atividade</li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="logoutModal">
+        <div class="modal-content">
+            <h3>Deseja realmente sair?</h3>
+            <div class="modal-buttons">
+                <button class="btn-confirm" onclick="logout()">Sair</button>
+                <button class="btn-cancel" onclick="closeLogoutModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openLogoutModal() { document.getElementById('logoutModal').style.display = 'flex'; }
+        function closeLogoutModal() { document.getElementById('logoutModal').style.display = 'none'; }
+        function logout() { window.location.href = '/api/auth/logout'; }
+
+        async function carregar() {
+            try {
+                const [meRes, statsRes] = await Promise.all([
+                    fetch('/api/colaborador/me'),
+                    fetch('/api/adm/dashboard')
+                ]);
+
+                if (meRes.status === 401 || meRes.status === 403 || statsRes.status === 403) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+
+                const me = await meRes.json();
+                const stats = await statsRes.json();
+
+                document.getElementById('userName').textContent = me.nome;
+                document.getElementById('userAvatar').textContent = me.nome.split(' ').map(n => n[0]).slice(0, 2).join('');
+
+                document.getElementById('totalAlunos').textContent = stats.totalAlunos;
+                document.getElementById('totalResponsaveis').textContent = stats.totalResponsaveis;
+                document.getElementById('totalProfessores').textContent = stats.totalProfessores;
+                document.getElementById('totalAdm').textContent = stats.totalAdministradores;
+                document.getElementById('totalDiretores').textContent = stats.totalDiretores;
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('dashboardContent').style.display = 'block';
+            } catch (e) {
+                window.location.href = '/login.html';
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', carregar);
+    </script>
+
+</body>
+</html>
