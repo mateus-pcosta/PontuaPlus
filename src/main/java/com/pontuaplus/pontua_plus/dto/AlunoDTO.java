@@ -20,6 +20,7 @@ public class AlunoDTO {
     private LocalDate dataNascimento;
     private LocalDate dataIngresso;
     private String turma;
+    private Integer bimestreAtual;
 
     public static AlunoDTO fromEntity(Aluno aluno) {
         return new AlunoDTO(
@@ -31,7 +32,8 @@ public class AlunoDTO {
                 aluno.getColegio(),
                 aluno.getDataNascimento(),
                 aluno.getDataIngresso(),
-                aluno.getTurma()
+                aluno.getTurma(),
+                aluno.getBimestreAtual()
         );
     }
 }
