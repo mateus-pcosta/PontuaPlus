@@ -24,79 +24,56 @@
         </div>
     </header>
 
-
     <div class="container">
 
-        <!-- MÉTRICAS -->
-        <section class="metrics-grid">
-
-            <div class="metric-card">
-                <span class="metric-value" id="totalTurmas">2</span>
-                <span class="metric-label">Turmas</span>
-            </div>
-
-            <div class="metric-card">
-                <span class="metric-value" id="totalAlunos">60</span>
-                <span class="metric-label">Alunos Ativos</span>
-            </div>
-
-            <div class="metric-card">
-                <span class="metric-value" id="atividadesPendentes">14</span>
-                <span class="metric-label">Atividades Pendentes</span>
-            </div>
-
-        </section>
-
-
-        <!-- LISTAGEM DE TURMAS -->
-        <div class="card">
-            <h2>Minhas Turmas</h2>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Turma</th>
-                        <th>Curso</th>
-                        <th>Período</th>
-                        <th>Alunos</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                
-                <tbody id="listaTurmas">
-                    <tr>
-                        <td>Turma A</td>
-                        <td>Logística</td>
-                        <td>1º Período</td>
-                        <td>28</td>
-                        <td>
-                            <a href="#" class="btn btn-primary">Acessar</a>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>Turma B</td>
-                        <td>RH</td>
-                        <td>3º Período</td>
-                        <td>32</td>
-                        <td>
-                            <a href="#" class="btn btn-primary">Acessar</a>
-                        </td>
-                    </tr>
-
-                </tbody>
-            </table>
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Carregando dados...</p>
         </div>
 
+        <div id="dashboardContent" style="display:none;">
+
+            <!-- MÉTRICAS -->
+            <section class="metrics-grid">
+                <div class="metric-card animate-fade-in-up">
+                    <span class="metric-value" id="totalTurmas">—</span>
+                    <span class="metric-label">Turmas</span>
+                </div>
+                <div class="metric-card animate-fade-in-up delay-100">
+                    <span class="metric-value" id="totalAlunos">—</span>
+                    <span class="metric-label">Alunos Ativos</span>
+                </div>
+                <div class="metric-card animate-fade-in-up delay-200">
+                    <span class="metric-value" id="atividadesPendentes">—</span>
+                    <span class="metric-label">Atividades Pendentes</span>
+                </div>
+            </section>
+
+            <!-- LISTAGEM DE TURMAS -->
+            <div class="card">
+                <h2>Minhas Turmas</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Turma</th>
+                            <th>Série</th>
+                            <th>Alunos</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaTurmas">
+                        <tr><td colspan="4" style="text-align:center; color:#999;">Carregando turmas...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
     </div>
-
-
 
     <!-- MODAL DE LOGOUT -->
     <div class="modal-overlay" id="logoutModal">
         <div class="modal-content">
             <h3>Deseja realmente sair?</h3>
-
             <div class="modal-buttons">
                 <button class="btn-confirm" onclick="logout()">Sair</button>
                 <button class="btn-cancel" onclick="closeLogoutModal()">Cancelar</button>
@@ -104,37 +81,63 @@
         </div>
     </div>
 
-
-
-
-    <!-- JS -->
     <script>
-        function openLogoutModal() {
-            document.getElementById("logoutModal").style.display = "flex";
+        function openLogoutModal() { document.getElementById('logoutModal').style.display = 'flex'; }
+        function closeLogoutModal() { document.getElementById('logoutModal').style.display = 'none'; }
+        function logout() { window.location.href = '/api/auth/logout'; }
+
+        async function carregar() {
+            try {
+                const [meRes, turmasRes] = await Promise.all([
+                    fetch('/api/colaborador/me'),
+                    fetch('/api/professor/turmas')
+                ]);
+
+                if (meRes.status === 401 || meRes.status === 403 ||
+                    turmasRes.status === 401 || turmasRes.status === 403) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+
+                const me = await meRes.json();
+                const turmas = await turmasRes.json();
+
+                document.getElementById('userName').textContent = me.nome || '';
+                document.getElementById('userAvatar').textContent = (me.nome || '')
+                    .split(' ').map(n => n[0]).filter(Boolean).slice(0, 2).join('');
+
+                const totalAlunos = turmas.reduce((sum, t) => sum + t.totalAlunos, 0);
+                document.getElementById('totalTurmas').textContent = turmas.length;
+                document.getElementById('totalAlunos').textContent = totalAlunos;
+
+                const tbody = document.getElementById('listaTurmas');
+                if (turmas.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#999;">Nenhuma turma cadastrada</td></tr>';
+                } else {
+                    tbody.innerHTML = turmas.map(t => `
+                        <tr>
+                            <td>${escapeHtml(t.turma || '—')}</td>
+                            <td>${escapeHtml(t.serie || '—')}</td>
+                            <td>${t.totalAlunos}</td>
+                            <td><a href="#" class="btn btn-primary">Acessar</a></td>
+                        </tr>
+                    `).join('');
+                }
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('dashboardContent').style.display = 'block';
+            } catch (e) {
+                window.location.href = '/login.html';
+            }
         }
 
-        function closeLogoutModal() {
-            document.getElementById("logoutModal").style.display = "none";
+        function escapeHtml(value) {
+            const div = document.createElement('div');
+            div.textContent = String(value ?? '');
+            return div.innerHTML;
         }
 
-        function logout() {
-            window.location.href = "/api/auth/logout";
-        }
-        // Atualizar nome do usuário
-        fetch('/api/colaborador/me')
-          .then(r => r.json())
-          .then(data => {
-              document.getElementById('userName').textContent = data.nome;
-        
-              const iniciais = data.nome
-                  .split(' ')
-                  .map(n => n[0])
-                  .slice(0, 2)
-                  .join('');
-        
-              document.getElementById('userAvatar').textContent = iniciais;
-        });
-
+        window.addEventListener('DOMContentLoaded', carregar);
     </script>
 
 </body>
