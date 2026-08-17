@@ -102,6 +102,7 @@ Controllers **não contêm regras de negócio** — apenas orquestram a chamada 
 | `ResponsavelAuthController` | `POST /api/responsavel/vincular` | Vincula aluno ao responsável por matrícula |
 | `AdmController` | `GET /api/adm/dashboard` | Métricas do painel ADM |
 | `DiretorController` | `GET /api/diretor/dashboard` | Métricas do painel Diretor |
+| `ProfessorController` | `GET /api/professor/turmas` | Turmas com contagem de alunos agrupadas por turma e série |
 | `EventosController` | `GET /api/eventos` | Lista atividades extras do aluno |
 | `EventosController` | `GET /api/eventos/tipos` | Catálogo de tipos de atividade |
 | `EventosController` | `POST /api/eventos/submeter` | Submete nova atividade extra |

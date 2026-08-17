@@ -30,8 +30,10 @@ async function carregarDashboard() {
         const data = await response.json();
         renderizarDashboard(data);
     } catch (error) {
-        console.error('Erro no dashboard:', error);
-        alert('Erro ao carregar dados do dashboard');
+        const loading = document.getElementById('loading');
+        if (loading) {
+            loading.innerHTML = '<p style="color:#999; text-align:center; padding:24px;">Não foi possível carregar os dados deste perfil.</p>';
+        }
     }
 }
 

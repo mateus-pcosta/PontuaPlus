@@ -82,6 +82,6 @@ CREATE TABLE responsaveis_alunos (
 
 ## Pendente (próximas implementações)
 
-- Painel do professor (`/professor-dashboard.html`) com visão de turma e lançamento de atividades
 - Telas de gestão no painel ADM (aprovar/rejeitar submissões, gerenciar catálogo)
 - Notificações passivas ao responsável (e-mail ao filho ganhar pontos)
+- Lançamento de atividades pelo professor (avaliação de submissões da turma)

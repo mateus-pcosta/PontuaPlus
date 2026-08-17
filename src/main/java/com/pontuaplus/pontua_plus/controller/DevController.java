@@ -3,7 +3,10 @@ package com.pontuaplus.pontua_plus.controller;
 import com.pontuaplus.pontua_plus.dto.DevStatsDTO;
 import com.pontuaplus.pontua_plus.enums.TipoUsuario;
 import com.pontuaplus.pontua_plus.repository.AlunoRepository;
+import com.pontuaplus.pontua_plus.repository.AtividadeExtraRepository;
 import com.pontuaplus.pontua_plus.repository.ColaboradorRepository;
+import com.pontuaplus.pontua_plus.repository.FrequenciaRepository;
+import com.pontuaplus.pontua_plus.repository.NotaRepository;
 import com.pontuaplus.pontua_plus.repository.ResponsavelRepository;
 import com.pontuaplus.pontua_plus.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,9 @@ public class DevController {
     private final ResponsavelRepository responsavelRepository;
     private final ColaboradorRepository colaboradorRepository;
     private final UsuarioRepository usuarioRepository;
+    private final NotaRepository notaRepository;
+    private final FrequenciaRepository frequenciaRepository;
+    private final AtividadeExtraRepository atividadeExtraRepository;
 
     @GetMapping("/stats")
     @PreAuthorize("hasRole('DEV')")
@@ -31,7 +37,11 @@ public class DevController {
                 colaboradorRepository.countByTipo(TipoUsuario.ADMINISTRADOR),
                 colaboradorRepository.countByTipo(TipoUsuario.DIRETOR),
                 colaboradorRepository.countByTipo(TipoUsuario.DEV),
-                usuarioRepository.count()
+                usuarioRepository.count(),
+                notaRepository.count(),
+                frequenciaRepository.count(),
+                atividadeExtraRepository.count(),
+                alunoRepository.findTurmasComContagem().size()
         );
         return ResponseEntity.ok(dto);
     }

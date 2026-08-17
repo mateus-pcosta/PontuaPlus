@@ -15,4 +15,8 @@ public class DevStatsDTO {
     private long totalDiretores;
     private long totalDevs;
     private long totalUsuarios;
+    private long totalNotas;
+    private long totalFrequencias;
+    private long totalAtividades;
+    private long totalTurmas;
 }

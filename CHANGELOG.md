@@ -43,6 +43,11 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 - `ConflictException` com retorno HTTP 409 para duplicatas de e-mail e matrícula
 
 ### Changed
+- `ProfessorController` criado com endpoint `GET /api/professor/turmas` (`@PreAuthorize("hasRole('PROFESSOR') or hasRole('DEV')")`) — agrupa alunos por turma e série via JPQL e retorna lista de `ProfessorTurmaDTO`
+- `ProfessorTurmaDTO` criado como record Java com campos `turma`, `serie` e `totalAlunos`
+- `AlunoRepository` — adicionada query JPQL `findTurmasComContagem()` que agrupa alunos por `turma` e `serie` com contagem de cada grupo
+- `DevStatsDTO` e `DevController` enriquecidos com 4 novos campos: `totalNotas`, `totalFrequencias`, `totalAtividades` e `totalTurmas`; injetados `NotaRepository`, `FrequenciaRepository` e `AtividadeExtraRepository` no controller
+- `dev/dashboard.html` — segunda linha de métricas adicionada (Notas lançadas, Frequências, Atividades extras, Turmas cadastradas); seção "Acessar Dashboards" restaurada com botões de navegação real para todos os perfis
 - `DataInitializer` estendido com usuários de teste para todos os perfis: RESPONSAVEL (`resp@pontua.com`), PROFESSOR (`prof@pontua.com`), ADMINISTRADOR (`adm@pontua.com`), DIRETOR (`diretor@pontua.com`) e DEV (`dev@pontua.com`) — todos com senha `123456`; criação via método `criarNaoAlunos()` com guard `existsByEmail` para evitar duplicatas em reinicializações
 - `DataInitializer` agora re-encoda senhas de **todos** os usuários de teste existentes no startup (não apenas `mateus@pontua.com`) usando `usuarioRepository.findByEmail()` na superclasse `Usuario`
 - `SecurityConfig` anotado com `@EnableMethodSecurity` para habilitar `@PreAuthorize` nos controllers; `/responsavel-registro.html` adicionado a `permitAll`
@@ -73,6 +78,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 - Dados de teste no SQL corrigidos com valores realistas e tipos de atividade válidos
 
 ### Fixed
+- `professor-dashboard.html` exibia dados hardcoded de faculdade ("Logística", "RH", "Período") — substituídos por dados reais do banco via novo endpoint `GET /api/professor/turmas`; colunas da tabela atualizadas para vocabulário de ensino fundamental/médio (Turma | Série | Alunos | Ações); métricas `totalTurmas` e `totalAlunos` calculadas dinamicamente pela API
+- `responsavel/dashboard.html` redirecionava para login quando acessado pelo usuário DEV — adicionado check `!res.ok` antes de `res.json()` para tratar 404 com mensagem inline em vez de redirect
+- `dashboard.js` exibia `alert()` bloqueante ao falhar a carga do dashboard — substituído por mensagem inline no spinner de carregamento
 - `GET /api/auth/me` retornava 404 para usuários do tipo Responsavel — adicionado endpoint `GET /api/responsavel/me` em `ResponsavelAuthController`; `responsavel/dashboard.html` atualizado para chamar o endpoint correto
 - `TypeError` em `eventos.html` ao chamar `me.nome.split()` sem guard — adicionada verificação de `meRes.ok` e uso de `(me.nome || '')` antes do split para evitar crash silencioso seguido de redirect inesperado para login
 - `ROLE_COORDENADOR` removido do `TipoUsuario` quebrava usuários com esse tipo no banco de dados (mapeamento JPA falha) — `COORDENADOR` readicionado ao enum e tratado no `CustomSuccessHandler` com redirect para `/adm/dashboard.html`
