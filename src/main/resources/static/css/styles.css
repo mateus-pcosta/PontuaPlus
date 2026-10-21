@@ -688,7 +688,7 @@ body {
 .progress-bar {
     width: 100%;
     height: 10px;
-    background: var(--cinza-medio);
+    background: var(--roxo-vibrante);
     border-radius: var(--radius-full);
     overflow: hidden;
     margin-top: 12px;
@@ -696,50 +696,24 @@ body {
 
 .progress-fill {
     height: 100%;
-    background: var(--gradient-primary);
+    background: var(--azul-royal);
     border-radius: var(--radius-full);
-    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
-}
-
-.progress-fill::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-    animation: shimmer 1.8s ease-out 1 forwards;
-    background-size: 200% 100%;
 }
 
 .progress-bar-detalhe {
     width: 100%;
     height: 12px;
-    background: var(--cinza-claro);
+    background: var(--roxo-vibrante);
     border-radius: var(--radius-full);
     overflow: hidden;
 }
 
 .progress-fill-detalhe {
     height: 100%;
-    background: var(--gradient-primary);
+    background: var(--azul-royal);
     border-radius: var(--radius-full);
-    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
-}
-
-.progress-fill-detalhe::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-    animation: shimmer 1.8s ease-out 1 forwards;
-    background-size: 200% 100%;
 }
 
 /* ==================== TABELAS ==================== */
@@ -925,7 +899,7 @@ tr:last-child td {
 .materia-bar-container {
     flex: 1;
     height: 32px;
-    background: var(--cinza-claro);
+    background: var(--roxo-vibrante);
     border-radius: var(--radius-full);
     overflow: hidden;
     position: relative;
@@ -933,9 +907,8 @@ tr:last-child td {
 
 .materia-bar-fill {
     height: 100%;
-    background: var(--gradient-primary);
+    background: var(--azul-royal);
     border-radius: var(--radius-full);
-    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -943,18 +916,6 @@ tr:last-child td {
     font-size: 12px;
     font-weight: 600;
     position: relative;
-}
-
-.materia-bar-fill::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    animation: shimmer 1.8s ease-out 1 forwards;
-    background-size: 200% 100%;
 }
 
 .materia-nota {
