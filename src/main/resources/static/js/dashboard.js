@@ -108,7 +108,7 @@ function renderizarCardsSuperiores(pontuacao) {
 }
 
 // Renderizar gráfico de evolução das notas
-function renderizarGraficoNotas(notas) {
+function renderizarGraficoNotas(notas, mediaTurma) {
     const ctx = document.getElementById('notasChart');
 
     if (!notas || notas.length === 0) {
@@ -126,9 +126,16 @@ function renderizarGraficoNotas(notas) {
         notasPorBimestre[nota.bimestre].push(nota.valor);
     });
 
+    // Média da turma por bimestre (vem pronta do backend)
+    const mediaTurmaPorBimestre = {};
+    (mediaTurma || []).forEach(item => {
+        mediaTurmaPorBimestre[item.bimestre] = item.media;
+    });
+
     // Calcular médias por bimestre
     const meses = [];
     const medias = [];
+    const mediasTurma = [];
 
     const bimestreMeses = {
         1: ['Jan', 'Fev'],
@@ -144,43 +151,103 @@ function renderizarGraficoNotas(notas) {
             const media = valores.reduce((a, b) => a + b, 0) / valores.length;
             const nomesMeses = bimestreMeses[bimestre];
             if (!nomesMeses) return;
+            const mediaTurmaBimestre = mediaTurmaPorBimestre[bimestre];
             nomesMeses.forEach(m => {
                 meses.push(m);
                 medias.push(media.toFixed(1));
+                mediasTurma.push(mediaTurmaBimestre !== undefined ? mediaTurmaBimestre.toFixed(1) : null);
             });
         });
 
-    // Destruir gráfico anterior se existir
+    // Destruir gráfico anterior (e cancelar sua animação de revelação, se ainda rodando)
     if (notasChart) {
+        if (notasChart.$revelacaoRaf) cancelAnimationFrame(notasChart.$revelacaoRaf);
         notasChart.destroy();
     }
+
+    const temMediaTurma = mediasTurma.some(v => v !== null);
+
+    const datasets = [{
+        label: 'Seu Desempenho',
+        data: medias,
+        borderColor: '#2A5BDA',
+        borderWidth: 3,
+        tension: 0.4,
+        fill: false,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointBackgroundColor: '#2A5BDA',
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2
+    }];
+
+    if (temMediaTurma) {
+        datasets.push({
+            label: 'Média da Turma',
+            data: mediasTurma,
+            borderColor: '#8b5cf6',
+            backgroundColor: 'rgba(139, 92, 246, 0.08)',
+            borderWidth: 2,
+            borderDash: [6, 4],
+            tension: 0.4,
+            fill: false,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            pointBackgroundColor: '#8b5cf6',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            spanGaps: true
+        });
+    }
+
+    // Única animação mantida no produto: uma "cortina" revela o gráfico da
+    // esquerda pra direita de forma contínua e suave, em vez de animar ponto a
+    // ponto (que com poucos pontos — 1 por mês — fica visivelmente travado).
+    // A linha inteira é desenhada na posição final desde o primeiro frame; um
+    // clip (retângulo que cresce da esquerda pra direita) é quem esconde/revela
+    // o que já foi "desenhado", redesenhado a cada requestAnimationFrame.
+    const revelacaoEsquerdaDireita = {
+        id: 'revelacaoEsquerdaDireita',
+        beforeDatasetsDraw(chart) {
+            const { ctx, chartArea } = chart;
+            if (!chartArea) return;
+            const progresso = chart.$revelacaoProgresso ?? 1;
+            const largura = (chartArea.right - chartArea.left) * progresso;
+            // Folga maior que raio+borda do ponto, senão a metade externa dos
+            // pontos nas pontas (primeiro e último mês) fica cortada pelo clip
+            const folga = 12;
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(chartArea.left - folga, chartArea.top - 20, largura + folga * 2, chartArea.height + 40);
+            ctx.clip();
+        },
+        afterDatasetsDraw(chart) {
+            chart.ctx.restore();
+        }
+    };
 
     // Criar novo gráfico
     notasChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: meses,
-            datasets: [{
-                label: 'Média das Notas',
-                data: medias,
-                borderColor: '#2A5BDA',
-                backgroundColor: 'rgba(42, 91, 218, 0.1)',
-                borderWidth: 3,
-                tension: 0.4,
-                fill: true,
-                pointRadius: 5,
-                pointHoverRadius: 7,
-                pointBackgroundColor: '#2A5BDA',
-                pointBorderColor: '#fff',
-                pointBorderWidth: 2
-            }]
+            datasets: datasets
         },
+        plugins: [revelacaoEsquerdaDireita],
         options: {
             responsive: true,
             maintainAspectRatio: true,
+            animation: false,
             plugins: {
                 legend: {
-                    display: false
+                    display: temMediaTurma,
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                        padding: 16,
+                        font: { size: 12 }
+                    }
                 },
                 tooltip: {
                     backgroundColor: 'rgba(42, 91, 218, 0.9)',
@@ -194,7 +261,7 @@ function renderizarGraficoNotas(notas) {
                     },
                     callbacks: {
                         label: function(context) {
-                            return 'Média: ' + context.parsed.y;
+                            return context.dataset.label + ': ' + context.parsed.y;
                         }
                     }
                 }
@@ -226,6 +293,23 @@ function renderizarGraficoNotas(notas) {
             }
         }
     });
+
+    // Roda a cortina de 0% a 100% em 1s, com uma leve desaceleração no final
+    const duracaoRevelacaoMs = 1000;
+    const inicioRevelacao = performance.now();
+
+    function animarRevelacao(agora) {
+        const t = Math.min((agora - inicioRevelacao) / duracaoRevelacaoMs, 1);
+        const suavizado = -(Math.cos(Math.PI * t) - 1) / 2; // ease-in-out senoidal: usa os 2s inteiros, sem "parar" no fim
+        notasChart.$revelacaoProgresso = suavizado;
+        notasChart.draw();
+        if (t < 1) {
+            notasChart.$revelacaoRaf = requestAnimationFrame(animarRevelacao);
+        }
+    }
+
+    notasChart.$revelacaoProgresso = 0;
+    notasChart.$revelacaoRaf = requestAnimationFrame(animarRevelacao);
 }
 
 // Renderizar gráfico de frequência mensal
@@ -280,6 +364,13 @@ function renderizarGraficoFrequencia(frequencias) {
         options: {
             responsive: true,
             maintainAspectRatio: true,
+            animation: {
+                y: {
+                    duration: 1000,
+                    easing: 'easeOutQuart',
+                    from: (context) => context.chart.scales.y.getPixelForValue(0)
+                }
+            },
             plugins: {
                 legend: {
                     position: 'top',

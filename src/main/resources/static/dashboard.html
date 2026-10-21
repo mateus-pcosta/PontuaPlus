@@ -24,8 +24,16 @@
             <a href="/perfil.html" class="user-avatar animate-wiggle" id="userAvatar" style="text-decoration:none;">M</a>
         </div>
     </div>
+    <script>
+        // Anima o header só na primeira vez que o Desempenho é visto nesta aba
+        // (logo após o login) — nunca de novo ao navegar ou voltar pra cá.
+        if (!sessionStorage.getItem('pontuaplus_header_animado')) {
+            document.querySelector('.header').classList.add('header-entrada');
+            sessionStorage.setItem('pontuaplus_header_animado', '1');
+        }
+    </script>
 
-    <div class="container">
+    <div class="container" id="main-content">
         <div id="loading" class="loading">
             <div class="spinner"></div>
             <p>Carregando seus dados...</p>
