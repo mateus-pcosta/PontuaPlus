@@ -8,6 +8,13 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 ## [Unreleased]
 
 ### Added
+
+- Aba de Acessibilidade (`/acessibilidade.html`): tamanho de fonte, alto contraste, reduzir movimento, sublinhar links, tradutor de Libras (VLibras) e leitura em voz alta (Web Speech API); preferências persistidas por usuário via `GET`/`PUT /api/acessibilidade` e propagadas em todas as páginas por `js/acessibilidade.js`
+- Entidade `AcessibilidadePreferencia` (`@OneToOne` com `Usuario`) e enum `TamanhoFonte`
+- Skill de projeto `.claude/skills/accessibility-tab/SKILL.md` documentando o padrão da aba de Acessibilidade
+- Card "Próximo Nível" no topo do Desempenho, substituindo "Ranking Atual" — mostra o próximo tier e quantos pontos faltam; badge de nível atual adicionado ao card "Pontos Atuais"
+- Linha "Média da Turma" no gráfico de evolução das notas, calculada por `NotaRepository.mediaPorBimestreDaTurma()`
+- `Ranking.getProximoNivel()` — fonte única para o cálculo de próximo tier, usada por `DashboardDTO` e `RecompensaDTO`
 - Tela de Recompensas (`/recompensas.html`) com card de status, seções por tier e modal "em breve" para resgate
 - Endpoint `GET /api/recompensas` com catálogo de recompensas por tier e status atual do aluno
 - Endpoint `GET /api/recompensas/emblemas` retornando apenas os emblemas do aluno autenticado
@@ -43,6 +50,11 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 - `ConflictException` com retorno HTTP 409 para duplicatas de e-mail e matrícula
 
 ### Changed
+
+- Barras de progresso (`.progress-fill`, `.progress-fill-detalhe`, `.materia-bar-fill`) trocaram o preenchimento em gradiente por trilha roxa sólida + preenchimento azul sólido — evita a cor cinza/branca "sobrando" quando a barra não está 100% cheia
+- `RecompensaDTO.TierRecompensasDTO` ganhou o campo `pontoMaximo`; `recompensas.js` parou de reconstruir faixas de pontos e ordem dos tiers na mão, usando os dados que a API já retorna
+- `DashboardDTO.PontuacaoDTO` ganhou `proximoNivel` e `pontosParaProximo`, calculados a partir de `Ranking.getProximoNivel()`
+- `RecompensaService` — método privado `proximoTier()` removido em favor de `Ranking.getProximoNivel()`
 - `ProfessorController` criado com endpoint `GET /api/professor/turmas` (`@PreAuthorize("hasRole('PROFESSOR') or hasRole('DEV')")`) — agrupa alunos por turma e série via JPQL e retorna lista de `ProfessorTurmaDTO`
 - `ProfessorTurmaDTO` criado como record Java com campos `turma`, `serie` e `totalAlunos`
 - `AlunoRepository` — adicionada query JPQL `findTurmasComContagem()` que agrupa alunos por `turma` e `serie` com contagem de cada grupo
@@ -78,6 +90,10 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 - Dados de teste no SQL corrigidos com valores realistas e tipos de atividade válidos
 
 ### Fixed
+
+- Skip link "Pular para o conteúdo" removido de todas as páginas — confundia como um botão escondido no topo
+- `.a11y-switch` sem `position: relative` deixava o checkbox escondido posicionado fora do lugar (herdava o `position: sticky` do `.header`), quebrando o anel de foco visível ao navegar por teclado
+- Texto "Diamante" do card "Próximo Nível" estourava a largura do card com `.metric-value` (48px) — trocado para `.metric-value-small` (32px)
 - `professor-dashboard.html` exibia dados hardcoded de faculdade ("Logística", "RH", "Período") — substituídos por dados reais do banco via novo endpoint `GET /api/professor/turmas`; colunas da tabela atualizadas para vocabulário de ensino fundamental/médio (Turma | Série | Alunos | Ações); métricas `totalTurmas` e `totalAlunos` calculadas dinamicamente pela API
 - `responsavel/dashboard.html` redirecionava para login quando acessado pelo usuário DEV — adicionado check `!res.ok` antes de `res.json()` para tratar 404 com mensagem inline em vez de redirect
 - `dashboard.js` exibia `alert()` bloqueante ao falhar a carga do dashboard — substituído por mensagem inline no spinner de carregamento
