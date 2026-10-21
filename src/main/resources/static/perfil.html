@@ -122,6 +122,7 @@
     </style>
 </head>
 <body style="background: var(--cinza-claro);">
+    <script src="/js/acessibilidade.js"></script>
     <div class="header">
         <img src="/img/logopreto.png" alt="Pontua+" class="header-logo">
         <nav class="nav-menu">
@@ -129,7 +130,7 @@
             <a href="/ranking.html" class="nav-link">Ranking</a>
             <a href="/recompensas.html" class="nav-link">Recompensas</a>
             <a href="/eventos.html" class="nav-link">Eventos</a>
-            <span class="nav-link disabled">Acessibilidade</span>
+            <a href="/acessibilidade.html" class="nav-link">Acessibilidade</a>
         </nav>
         <div class="user-info">
             <span id="userName" class="animate-fade-in">Carregando...</span>
@@ -139,7 +140,7 @@
         </div>
     </div>
 
-    <div class="container" style="max-width: 900px;">
+    <div class="container" style="max-width: 900px;" id="main-content">
         <div id="loading" class="loading">
             <div class="spinner"></div>
             <p>Carregando seu perfil...</p>

@@ -60,7 +60,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/index.html", "/login.html", "/registro.html", "/perfil.html",
                                 "/dashboard.html", "/ranking.html", "/recompensas.html", "/favicon.ico",
-                                "/responsavel-registro.html",
+                                "/responsavel-registro.html", "/acessibilidade.html",
                                 "/img/**", "/css/**", "/js/**", "/assets/**", "/api/auth/**", "/api/registro/**").permitAll()
                         .anyRequest().authenticated()
                 )

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acessibilidade - Pontua+</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body style="background: var(--cinza-claro);">
+    <script src="/js/acessibilidade.js"></script>
+
+    <div class="header">
+        <img src="/img/logopreto.png" alt="Pontua+" class="header-logo">
+        <nav class="nav-menu" role="navigation" aria-label="Navegação principal">
+            <button type="button" class="nav-link" style="border:none;background:none;font:inherit;" onclick="history.back()">← Voltar</button>
+            <span class="nav-link active" aria-current="page">Acessibilidade</span>
+        </nav>
+        <div class="user-info">
+            <a href="/perfil.html" class="user-avatar" id="userAvatar" style="text-decoration:none;">M</a>
+        </div>
+    </div>
+
+    <div class="container" id="main-content">
+        <h1 class="ranking-page-title text-gradient">Acessibilidade</h1>
+        <p class="ranking-page-subtitle">Ajuste a exibição do Pontua+ do seu jeito. Suas preferências ficam salvas na sua conta.</p>
+
+        <div class="card card-glass">
+            <div class="a11y-secao">
+                <h2 class="a11y-secao-titulo">Tamanho da fonte</h2>
+                <p class="a11y-secao-desc">Aumenta ou diminui o texto em todo o Pontua+.</p>
+                <div class="a11y-fonte-btns" role="group" aria-label="Tamanho da fonte">
+                    <button type="button" class="a11y-fonte-btn" data-fonte="PEQUENA" aria-pressed="false" aria-label="Fonte pequena">A-</button>
+                    <button type="button" class="a11y-fonte-btn" data-fonte="MEDIA" aria-pressed="true" aria-label="Fonte média (padrão)">A</button>
+                    <button type="button" class="a11y-fonte-btn" data-fonte="GRANDE" aria-pressed="false" aria-label="Fonte grande">A+</button>
+                </div>
+            </div>
+
+            <div class="a11y-secao">
+                <h2 class="a11y-secao-titulo">Exibição</h2>
+                <p class="a11y-secao-desc">Controles de contraste, movimento e links.</p>
+
+                <div class="a11y-item">
+                    <div class="a11y-item-info">
+                        <div class="a11y-item-titulo">Alto contraste</div>
+                        <div class="a11y-item-desc">Fundos sólidos e texto mais escuro para facilitar a leitura.</div>
+                    </div>
+                    <label class="a11y-switch">
+                        <input type="checkbox" id="toggleAltoContraste" aria-label="Ativar alto contraste">
+                        <span class="a11y-switch-track" aria-hidden="true"></span>
+                    </label>
+                </div>
+
+                <div class="a11y-item">
+                    <div class="a11y-item-info">
+                        <div class="a11y-item-titulo">Reduzir movimento</div>
+                        <div class="a11y-item-desc">Desliga animações e transições decorativas.</div>
+                    </div>
+                    <label class="a11y-switch">
+                        <input type="checkbox" id="toggleReduzMovimento" aria-label="Reduzir movimento">
+                        <span class="a11y-switch-track" aria-hidden="true"></span>
+                    </label>
+                </div>
+
+                <div class="a11y-item">
+                    <div class="a11y-item-info">
+                        <div class="a11y-item-titulo">Sublinhar links</div>
+                        <div class="a11y-item-desc">Mostra um traço embaixo de todo link, além da cor.</div>
+                    </div>
+                    <label class="a11y-switch">
+                        <input type="checkbox" id="toggleSublinharLinks" aria-label="Sublinhar links">
+                        <span class="a11y-switch-track" aria-hidden="true"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="a11y-secao">
+                <h2 class="a11y-secao-titulo">Libras e leitura</h2>
+                <p class="a11y-secao-desc">Recursos de tradução e leitura em voz alta.</p>
+
+                <div class="a11y-item">
+                    <div class="a11y-item-info">
+                        <div class="a11y-item-titulo">Tradutor de Libras (VLibras)</div>
+                        <div class="a11y-item-desc">Ativa o widget oficial do governo para traduzir o conteúdo em Libras.</div>
+                    </div>
+                    <label class="a11y-switch">
+                        <input type="checkbox" id="toggleLibras" aria-label="Ativar tradutor de Libras">
+                        <span class="a11y-switch-track" aria-hidden="true"></span>
+                    </label>
+                </div>
+
+                <div class="a11y-item">
+                    <div class="a11y-item-info">
+                        <div class="a11y-item-titulo">Leitura em voz alta</div>
+                        <div class="a11y-item-desc">Lê em voz alta o item focado pelo teclado ou o texto selecionado.</div>
+                    </div>
+                    <label class="a11y-switch">
+                        <input type="checkbox" id="toggleLeituraVoz" aria-label="Ativar leitura em voz alta">
+                        <span class="a11y-switch-track" aria-hidden="true"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            function esperarPrefs(tentativas) {
+                if (!window.PontuaA11y) {
+                    if (tentativas > 0) setTimeout(function () { esperarPrefs(tentativas - 1); }, 50);
+                    return;
+                }
+                iniciar();
+            }
+
+            function iniciar() {
+                var prefs = window.PontuaA11y.obter();
+
+                var botoesFonte = document.querySelectorAll('.a11y-fonte-btn');
+                function marcarBotaoFonte(valor) {
+                    botoesFonte.forEach(function (btn) {
+                        btn.setAttribute('aria-pressed', btn.dataset.fonte === valor ? 'true' : 'false');
+                    });
+                }
+                marcarBotaoFonte(prefs.tamanhoFonte);
+                botoesFonte.forEach(function (btn) {
+                    btn.addEventListener('click', function () {
+                        marcarBotaoFonte(btn.dataset.fonte);
+                        window.PontuaA11y.definir('tamanhoFonte', btn.dataset.fonte);
+                    });
+                });
+
+                var mapaToggles = {
+                    toggleAltoContraste: 'altoContraste',
+                    toggleReduzMovimento: 'reduzMovimento',
+                    toggleSublinharLinks: 'sublinharLinks',
+                    toggleLibras: 'libras',
+                    toggleLeituraVoz: 'leituraVoz'
+                };
+
+                Object.keys(mapaToggles).forEach(function (id) {
+                    var chave = mapaToggles[id];
+                    var input = document.getElementById(id);
+                    input.checked = !!prefs[chave];
+                    input.addEventListener('change', function () {
+                        window.PontuaA11y.definir(chave, input.checked);
+                    });
+                });
+            }
+
+            esperarPrefs(20);
+        })();
+    </script>
+</body>
+</html>

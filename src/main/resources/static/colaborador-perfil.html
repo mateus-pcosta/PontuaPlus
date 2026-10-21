@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
+    <script src="/js/acessibilidade.js"></script>
     <div class="header">
         <img src="/img/logopreto.png" alt="Pontua+" class="header-logo">
         <nav class="nav-menu">
@@ -14,7 +15,7 @@
             <span class="nav-link disabled">Ranking</span>
             <span class="nav-link disabled">Recompensas</span>
             <span class="nav-link disabled">Eventos</span>
-            <span class="nav-link disabled">Acessibilidade</span>
+            <a href="/acessibilidade.html" class="nav-link">Acessibilidade</a>
         </nav>
         <div class="user-info">
             <span id="userName">Carregando...</span>
@@ -24,7 +25,7 @@
         </div>
     </div>
 
-    <div class="container">
+    <div class="container" id="main-content">
         <div id="loading" class="loading">
             <div class="spinner"></div>
             <p>Carregando seu perfil...</p>
