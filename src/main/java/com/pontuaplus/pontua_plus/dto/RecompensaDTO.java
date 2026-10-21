@@ -31,6 +31,7 @@ public class RecompensaDTO {
     public static class TierRecompensasDTO {
         private String tier;
         private int pontoMinimo;
+        private int pontoMaximo;
         private boolean desbloqueado;
         private List<RecompensaItemDTO> recompensas;
     }

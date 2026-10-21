@@ -25,4 +25,13 @@ public enum Ranking {
         }
         return BRONZE;
     }
+
+    public Ranking getProximoNivel() {
+        return switch (this) {
+            case BRONZE  -> PRATA;
+            case PRATA   -> OURO;
+            case OURO    -> DIAMOND;
+            case DIAMOND -> null;
+        };
+    }
 }

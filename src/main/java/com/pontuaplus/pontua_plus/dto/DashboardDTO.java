@@ -1,6 +1,7 @@
 package com.pontuaplus.pontua_plus.dto;
 
 import com.pontuaplus.pontua_plus.entity.*;
+import com.pontuaplus.pontua_plus.enums.Ranking;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,7 @@ public class DashboardDTO {
     private List<NotaDTO> notas;
     private List<FrequenciaDTO> frequencias;
     private List<AtividadeExtraDTO> atividadesExtras;
+    private List<MediaTurmaDTO> mediaTurma;
 
     @Data
     @NoArgsConstructor
@@ -89,28 +91,50 @@ public class DashboardDTO {
         private Integer totalPontos;
         private String ranking;
         private Integer posicaoRanking;
+        private String proximoNivel;
+        private Integer pontosParaProximo;
 
         public static PontuacaoDTO fromEntity(Pontuacao pontuacao) {
+            Ranking proximo = pontuacao.getRanking().getProximoNivel();
+            Integer pontosParaProximo = proximo != null
+                    ? Math.max(0, proximo.getPontoMinimo() - pontuacao.getTotalPontos())
+                    : null;
+
             return new PontuacaoDTO(
                     pontuacao.getPontosNotas(),
                     pontuacao.getPontosFrequencia(),
                     pontuacao.getPontosExtras(),
                     pontuacao.getTotalPontos(),
                     pontuacao.getRanking().name(),
-                    pontuacao.getPosicaoRanking()
+                    pontuacao.getPosicaoRanking(),
+                    proximo != null ? proximo.name() : null,
+                    pontosParaProximo
             );
+        }
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class MediaTurmaDTO {
+        private Integer bimestre;
+        private Double media;
+
+        public static MediaTurmaDTO fromRow(Object[] row) {
+            return new MediaTurmaDTO(((Number) row[0]).intValue(), ((Number) row[1]).doubleValue());
         }
     }
 
     public static DashboardDTO fromEntities(Aluno aluno, Pontuacao pontuacao,
                                              List<Nota> notas, List<Frequencia> frequencias,
-                                             List<AtividadeExtra> atividades) {
+                                             List<AtividadeExtra> atividades, List<Object[]> mediaTurmaRows) {
         return new DashboardDTO(
                 AlunoDTO.fromEntity(aluno),
                 pontuacao != null ? PontuacaoDTO.fromEntity(pontuacao) : null,
                 notas.stream().map(NotaDTO::fromEntity).collect(Collectors.toList()),
                 frequencias.stream().map(FrequenciaDTO::fromEntity).collect(Collectors.toList()),
-                atividades.stream().map(AtividadeExtraDTO::fromEntity).collect(Collectors.toList())
+                atividades.stream().map(AtividadeExtraDTO::fromEntity).collect(Collectors.toList()),
+                mediaTurmaRows.stream().map(MediaTurmaDTO::fromRow).collect(Collectors.toList())
         );
     }
 }

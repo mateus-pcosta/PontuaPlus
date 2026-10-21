@@ -53,7 +53,7 @@ function renderizarDashboard(data) {
     }
 
     // Renderizar gráficos
-    renderizarGraficoNotas(data.notas);
+    renderizarGraficoNotas(data.notas, data.mediaTurma);
     renderizarGraficoFrequencia(data.frequencias);
 
     // Renderizar detalhamento da pontuação
@@ -68,10 +68,18 @@ function renderizarDashboard(data) {
     renderizarAtividades(data.atividadesExtras);
 }
 
+// Cor de destaque de cada nível (só apresentação — os pontos de corte
+// de cada tier vêm prontos do backend, fonte única de verdade em Ranking.java)
+const NIVEL_COR = { BRONZE: 'bronze', PRATA: 'prata', OURO: 'ouro', DIAMOND: 'diamante' };
+
 // Renderizar cards superiores
 function renderizarCardsSuperiores(pontuacao) {
     // Pontos Atuais
     document.getElementById('totalPontos').textContent = pontuacao.totalPontos;
+
+    const badgeAtual = document.getElementById('nivelAtualBadge');
+    badgeAtual.textContent = `Nível ${formatarRanking(pontuacao.ranking)}`;
+    badgeAtual.className = `tier-nivel-badge badge-${pontuacao.ranking.toLowerCase()}`;
 
     // Notas e Frequência (35 + 15 = 50 pontos máx)
     const notasFreq = pontuacao.pontosNotas + pontuacao.pontosFrequencia;
@@ -84,9 +92,19 @@ function renderizarCardsSuperiores(pontuacao) {
     const evolucaoPercent = (pontuacao.pontosExtras / 50) * 100;
     document.getElementById('evolucaoEsforcoBar').style.width = `${evolucaoPercent}%`;
 
-    // Ranking
-    document.getElementById('rankingAtual').textContent = formatarRanking(pontuacao.ranking);
-    document.getElementById('posicaoRanking').textContent = `${pontuacao.posicaoRanking}º Lugar`;
+    // Próximo Nível (proximoNivel/pontosParaProximo já vêm calculados da API)
+    const proximoNivelEl = document.getElementById('proximoNivel');
+    const pontosProximoNivelEl = document.getElementById('pontosProximoNivel');
+    if (pontuacao.proximoNivel) {
+        proximoNivelEl.textContent = formatarRanking(pontuacao.proximoNivel);
+        proximoNivelEl.style.color = `var(--${NIVEL_COR[pontuacao.proximoNivel]})`;
+        const rotuloPontos = pontuacao.pontosParaProximo === 1 ? 'ponto' : 'pontos';
+        pontosProximoNivelEl.textContent = `${pontuacao.pontosParaProximo} ${rotuloPontos} para o próximo nível`;
+    } else {
+        proximoNivelEl.textContent = 'Nível máximo';
+        proximoNivelEl.style.color = 'var(--diamante)';
+        pontosProximoNivelEl.textContent = 'Você atingiu o nível mais alto!';
+    }
 }
 
 // Renderizar gráfico de evolução das notas

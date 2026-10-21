@@ -31,12 +31,16 @@ async function carregarRecompensas() {
 }
 
 function renderizarRecompensas(data) {
-    renderizarStatus(data.statusAtual);
+    renderizarStatus(data.statusAtual, data.tiers);
     atualizarAvatar(data);
+
+    // data.tiers já vem ordenado do backend (maior pontoMinimo primeiro) —
+    // a posição no array é a própria hierarquia, não precisa duplicá-la aqui
+    const meuIndice = data.tiers.findIndex(t => t.tier === data.statusAtual.rankingAtual);
 
     const container = document.getElementById('tiersContainer');
     container.innerHTML = '';
-    data.tiers.forEach(tier => container.appendChild(criarSecaoTier(tier, data.statusAtual.rankingAtual)));
+    data.tiers.forEach((tier, indice) => container.appendChild(criarSecaoTier(tier, indice, meuIndice)));
 
     document.getElementById('loading').style.display = 'none';
     document.getElementById('recompensasContent').style.display = 'block';
@@ -48,7 +52,7 @@ function atualizarAvatar(data) {
     // apenas atualiza se vier do backend no futuro; por ora mantém o padrão
 }
 
-function renderizarStatus(status) {
+function renderizarStatus(status, tiers) {
     const cfg = TIER_CONFIG[status.rankingAtual] ?? { label: status.rankingAtual, badgeClass: '' };
 
     document.getElementById('statusPontos').textContent = status.totalPontos;
@@ -63,7 +67,8 @@ function renderizarStatus(status) {
         document.getElementById('statusParaProximo').textContent = status.pontosParaProximo;
         document.getElementById('statusProximoLabel').textContent = 'Para ' + proximoCfg.label;
 
-        const pontoMinimoProximo = getPontoMinimo(status.proximoNivel);
+        const tierProximo = tiers.find(t => t.tier === status.proximoNivel);
+        const pontoMinimoProximo = tierProximo ? tierProximo.pontoMinimo : 0;
         const progressoPct = pontoMinimoProximo > 0
             ? Math.min(100, Math.round((status.totalPontos / pontoMinimoProximo) * 100))
             : 100;
@@ -79,17 +84,9 @@ function renderizarStatus(status) {
     }
 }
 
-function getPontoMinimo(tier) {
-    const map = { BRONZE: 0, PRATA: 26, OURO: 65, DIAMOND: 81 };
-    return map[tier] ?? 0;
-}
-
-function criarSecaoTier(tier, meuRanking) {
+function criarSecaoTier(tier, tierIndice, meuIndice) {
     const cfg = TIER_CONFIG[tier.tier] ?? { label: tier.tier, cssClass: '', badgeClass: '' };
-    const ehMeuTier = tier.tier === meuRanking;
-    const tiers = ['DIAMOND', 'OURO', 'PRATA', 'BRONZE'];
-    const meuIndice = tiers.indexOf(meuRanking);
-    const tierIndice = tiers.indexOf(tier.tier);
+    const ehMeuTier = tierIndice === meuIndice;
     const acimaDeMim = tierIndice < meuIndice;
     const abaixoDeMim = tierIndice > meuIndice;
 
@@ -102,9 +99,7 @@ function criarSecaoTier(tier, meuRanking) {
             ? '<span class="tier-badge-bloqueado">Bloqueado</span>'
             : '<span class="tier-badge-conquistado">Conquistado</span>';
 
-    const pontoLabel = tier.tier === 'DIAMOND' ? '81–100 pontos' :
-                       tier.tier === 'OURO'    ? '65–80 pontos'  :
-                       tier.tier === 'PRATA'   ? '26–64 pontos'  : '0–25 pontos';
+    const pontoLabel = `${tier.pontoMinimo}–${tier.pontoMaximo} pontos`;
 
     secao.innerHTML = `
         <div class="recompensa-secao-header ${acimaDeMim ? 'bloqueado' : ''}">

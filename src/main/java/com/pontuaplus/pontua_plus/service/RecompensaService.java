@@ -34,7 +34,7 @@ public class RecompensaService {
                 .orElseThrow(() -> new ResourceNotFoundException("Pontuação não encontrada"));
 
         Ranking rankingAtual = pontuacao.getRanking();
-        Ranking proximoRanking = proximoTier(rankingAtual);
+        Ranking proximoRanking = rankingAtual.getProximoNivel();
 
         int pontosParaProximo = proximoRanking != null
                 ? proximoRanking.getPontoMinimo() - pontuacao.getTotalPontos()
@@ -55,7 +55,7 @@ public class RecompensaService {
                             .stream()
                             .map(r -> new RecompensaItemDTO(r.getId(), r.getNome(), r.getDescricao(), r.getParceiro(), r.getIcone()))
                             .toList();
-                    return new TierRecompensasDTO(tier.name(), tier.getPontoMinimo(), tier == rankingAtual, itens);
+                    return new TierRecompensasDTO(tier.name(), tier.getPontoMinimo(), tier.getPontoMaximo(), tier == rankingAtual, itens);
                 })
                 .toList();
 
@@ -78,14 +78,5 @@ public class RecompensaService {
                 .stream()
                 .map(e -> new EmblemaDTO(e.getTitulo(), e.getRanking().name(), e.getBimestre(), e.getAno()))
                 .toList();
-    }
-
-    private Ranking proximoTier(Ranking atual) {
-        return switch (atual) {
-            case BRONZE  -> Ranking.PRATA;
-            case PRATA   -> Ranking.OURO;
-            case OURO    -> Ranking.DIAMOND;
-            case DIAMOND -> null;
-        };
     }
 }

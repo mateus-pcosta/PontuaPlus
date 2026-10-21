@@ -37,7 +37,8 @@ public class DashboardService {
         List<Nota> notas             = notaRepository.findByAluno(aluno);
         List<Frequencia> frequencias = frequenciaRepository.findByAluno(aluno);
         List<AtividadeExtra> extras  = atividadeExtraRepository.findByAlunoAndBimestre(aluno, bimestre);
+        List<Object[]> mediaTurma    = notaRepository.mediaPorBimestreDaTurma(aluno.getTurma(), aluno.getColegio());
 
-        return DashboardDTO.fromEntities(aluno, pontuacao, notas, frequencias, extras);
+        return DashboardDTO.fromEntities(aluno, pontuacao, notas, frequencias, extras, mediaTurma);
     }
 }
