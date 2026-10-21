@@ -96,7 +96,7 @@
                     Submeter Nova Atividade
                 </h2>
 
-                <div id="submeterAlerta" style="display:none; padding:12px 16px; border-radius:8px; margin-bottom:16px; font-size:14px;"></div>
+                <div id="submeterAlerta" class="alert" role="status" aria-live="polite" style="display:none; margin-bottom:16px;"></div>
 
                 <div style="display:grid; grid-template-columns: 1fr 1fr auto; gap:16px; align-items:end;">
                     <div class="form-group" style="margin:0;">
@@ -205,24 +205,45 @@
             `).join('');
         }
 
+        // Agrupa por categoria preservando a ordem em que a API retorna os tipos
+        function agruparPorCategoria(tipos) {
+            return tipos.reduce((acc, t) => {
+                const cat = t.categoria || 'Outras';
+                if (!acc[cat]) acc[cat] = [];
+                acc[cat].push(t);
+                return acc;
+            }, {});
+        }
+
         function renderizarCatalogo(tipos) {
-            document.getElementById('catalogoGrid').innerHTML = tipos.map(t => `
-                <div class="atividade-card">
-                    <div class="atividade-nome">${escapeHtml(t.descricao)}</div>
-                    <div class="atividade-tipo" style="font-size:12px; text-transform:uppercase; letter-spacing:0.5px;">${escapeHtml(t.key.replace(/_/g,' '))}</div>
-                    <div class="atividade-pontos">+${t.pontos} pontos</div>
-                </div>
+            const porCategoria = agruparPorCategoria(tipos);
+
+            document.getElementById('catalogoGrid').innerHTML = Object.keys(porCategoria).map(categoria => `
+                <div class="catalogo-categoria-titulo" style="grid-column: 1 / -1;">${escapeHtml(categoria)}</div>
+                ${porCategoria[categoria].map(t => `
+                    <div class="atividade-card atividade-card-catalogo">
+                        <div class="atividade-nome">${escapeHtml(t.descricao)}</div>
+                        <span class="atividade-pontos-badge">+${t.pontos} pontos</span>
+                    </div>
+                `).join('')}
             `).join('');
         }
 
         function preencherSelect(tipos) {
             const select = document.getElementById('tipoSelect');
-            tipos.forEach(t => {
-                const opt = document.createElement('option');
-                opt.value = t.key;
-                opt.textContent = `${t.descricao} (+${t.pontos} pts)`;
-                select.appendChild(opt);
-                tiposMap[t.key] = t;
+            const porCategoria = agruparPorCategoria(tipos);
+
+            Object.keys(porCategoria).forEach(categoria => {
+                const grupo = document.createElement('optgroup');
+                grupo.label = categoria;
+                porCategoria[categoria].forEach(t => {
+                    const opt = document.createElement('option');
+                    opt.value = t.key;
+                    opt.textContent = `${t.descricao} (+${t.pontos} pts)`;
+                    grupo.appendChild(opt);
+                    tiposMap[t.key] = t;
+                });
+                select.appendChild(grupo);
             });
         }
 
@@ -237,17 +258,22 @@
             }
         });
 
+        // Reaproveita as classes .alert/.alert-success/.alert-error já usadas em login.html,
+        // em vez de cores fixas — e mantém o aria-live do elemento informado pra leitores de tela
+        function mostrarAlerta(mensagem, tipo) {
+            const alerta = document.getElementById('submeterAlerta');
+            alerta.textContent = mensagem;
+            alerta.className = `alert alert-${tipo}`;
+            alerta.style.display = 'flex';
+        }
+
         async function submeterAtividade() {
             const tipo = document.getElementById('tipoSelect').value;
             const nome = document.getElementById('nomeAtividade').value.trim();
-            const alerta = document.getElementById('submeterAlerta');
             const btn = document.getElementById('btnSubmeter');
 
             if (!tipo) {
-                alerta.textContent = 'Selecione um tipo de atividade.';
-                alerta.style.background = '#f8d7da';
-                alerta.style.color = '#721c24';
-                alerta.style.display = 'block';
+                mostrarAlerta('Selecione um tipo de atividade.', 'error');
                 return;
             }
 
@@ -264,10 +290,7 @@
                 const data = await res.json();
 
                 if (res.ok) {
-                    alerta.textContent = `✓ Atividade "${data.nome}" submetida com sucesso! +${data.pontosConquistados} pontos.`;
-                    alerta.style.background = '#d4edda';
-                    alerta.style.color = '#155724';
-                    alerta.style.display = 'block';
+                    mostrarAlerta(`✓ Atividade "${data.nome}" submetida com sucesso! +${data.pontosConquistados} pontos.`, 'success');
 
                     document.getElementById('tipoSelect').value = '';
                     document.getElementById('nomeAtividade').value = '';
@@ -277,20 +300,14 @@
                     renderizarAtividades(atividadesDoAluno);
                     atualizarStats();
                 } else {
-                    alerta.textContent = data.error || 'Erro ao submeter atividade.';
-                    alerta.style.background = '#f8d7da';
-                    alerta.style.color = '#721c24';
-                    alerta.style.display = 'block';
+                    mostrarAlerta(data.error || 'Erro ao submeter atividade.', 'error');
                 }
             } catch (e) {
-                alerta.textContent = 'Erro de conexão. Tente novamente.';
-                alerta.style.background = '#f8d7da';
-                alerta.style.color = '#721c24';
-                alerta.style.display = 'block';
+                mostrarAlerta('Erro de conexão. Tente novamente.', 'error');
             } finally {
                 btn.disabled = false;
                 btn.textContent = 'Submeter';
-                setTimeout(() => { alerta.style.display = 'none'; }, 4000);
+                setTimeout(() => { document.getElementById('submeterAlerta').style.display = 'none'; }, 4000);
             }
         }
 

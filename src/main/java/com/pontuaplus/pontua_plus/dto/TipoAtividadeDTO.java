@@ -13,8 +13,9 @@ public class TipoAtividadeDTO {
     private String key;
     private String descricao;
     private int pontos;
+    private String categoria;
 
     public static TipoAtividadeDTO fromEnum(TipoAtividade tipo) {
-        return new TipoAtividadeDTO(tipo.name(), tipo.getDescricao(), tipo.getPontos());
+        return new TipoAtividadeDTO(tipo.name(), tipo.getDescricao(), tipo.getPontos(), tipo.getCategoria());
     }
 }

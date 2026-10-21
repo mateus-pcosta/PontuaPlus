@@ -988,6 +988,43 @@ tr:last-child td {
     background-clip: text;
 }
 
+/* Catálogo de atividades — informativo, não "conquistado": visual mais neutro
+   que o .atividade-card padrão (usado em Minhas Atividades e no dashboard) */
+.atividade-card-catalogo {
+    background: var(--branco);
+    border: 1px solid var(--cinza-medio);
+    border-left: 4px solid var(--roxo-vibrante);
+}
+
+.atividade-card-catalogo:hover {
+    transform: translateX(4px);
+    box-shadow: 0 6px 18px var(--sombra);
+}
+
+.atividade-pontos-badge {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    background: var(--cinza-claro);
+    color: var(--roxo-vibrante);
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.catalogo-categoria-titulo {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--roxo-vibrante);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin: 24px 0 12px;
+}
+
+.catalogo-categoria-titulo:first-child {
+    margin-top: 0;
+}
+
 /* ==================== LOADING ==================== */
 
 .loading {
